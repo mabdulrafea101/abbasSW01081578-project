@@ -1,1 +1,102 @@
-/.venv
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  so adding only *.manifest is not enough (see issue #813)
+*.manifest
+*.spec
+
+# Django stuff:
+*.log
+*.pot
+*.db
+*.sqlite3
+*.sqlite3-journal
+*.swp
+db.sqlite3
+
+# Media files
+/media/*
+!/media/.git  # Keep the .git file in the media directory to track media files
+
+# Static files
+/static/*
+!/static/.git  # Keep the .git file in the static directory to track static files
+
+# Temp files
+*~
+\#*
+.*.swp
+.DS_Store
+
+# OS generated files # OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+*.stackdump
+*.ipch
+*.tmp
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains IDEs
+.idea/
+*.iws
+*.ipr
+*.iml
+
+# PyCharm
+*.iml
+.idea/
+
+# OS X
+.DS_Store
+
+# General
+*.pyc
+*.orig
+*.~
+*.bak
+*.swp
+*.tmp
+log/
+logs/
+*.log
+
+# Requirements file
+versions.txt
