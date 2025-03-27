@@ -12,9 +12,13 @@ Events List
     <div class="col-md-10">
         <h2>Event List</h2>
     </div>
+    {% if request.user.user_type == 'manager' %}
     <div class="col-md-2">
         <a href="{% url 'event_create' %}" class="btn btn-success mb-3">Create Event</a>
     </div>
+    {% else %}
+    {% endif %}
+
 </div>
 
 <div class="row mb-12 g-6">

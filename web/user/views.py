@@ -51,7 +51,16 @@ class SignUpView(CreateView):
         print(form.cleaned_data)
 
         return response
-    
+
+
+class AllUsersListView(ManagerRequiredMixin, ListView):
+    model = CustomUser
+    template_name = 'user/all_users.html'
+    context_object_name = 'all_users'
+
+    def get_queryset(self):
+        return CustomUser.objects.exclude(is_superuser=True)
+
 
 class PendingUserListView(ManagerRequiredMixin, UserPassesTestMixin, ListView):
     model = CustomUser
@@ -118,7 +127,7 @@ class TeacherDashboardView(BaseDashboardView):
 
 class StudentDashboardView(BaseDashboardView):
     template_name = 'user/student_dashboard.html'
-    
+
     def get_queryset(self):
         return CustomUser.objects.filter(user_type='teacher')  # Students see teachers
 

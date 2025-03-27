@@ -15,7 +15,7 @@ All Users
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">All Users</h5>
-                <table id="pending_users_list" class="table table-striped" style="width:100%">
+                <table id="confirmed_users_list" class="table table-striped" style="width:100%">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -81,7 +81,7 @@ All Users
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
 <script>
     $(document).ready(function() {
-        new DataTable('#pending_users_list');
+        new DataTable('#confirmed_users_list');
     });
 </script>
 {% endblock page_JS %}
