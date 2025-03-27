@@ -9,12 +9,13 @@ Events List
 {% block main_content %}
 
 <div class="mb-4 row">
-    <div class="col-md-8 col-lg-6">
+    <div class="col-md-6 col-lg-6">
         <div class="card h-100">
             <div class="card-body">
-                <h5 class="card-title">{{ event.title }}</h5>
-                <h6 class="card-subtitle">{{ event.category }}</h6>
+                <h4 class="card-title">{{ event.title }}</h4>
+                <h5 class="card-subtitle">{{ event.category }}</h5>
                 <img class="img-fluid d-flex mx-auto my-6 rounded" src="{{ event.images.url }}" alt="Card image cap">
+                <h6 class="card-subtitle">Description: </h6>
                 <p class="card-text">{{ event.description }}.</p>
                 <div class="row">
                     <div class="col-md-6">
@@ -22,16 +23,117 @@ Events List
                         <p><strong>End Time:</strong></p>
                     </div>
                     <div class="col-md-6">
-                        <p> {{ event.end_date_time }}</p>
-                        <p>{{ event.end_date_time }}</p>
+                        <p> {{ event.start_date_time.date }}</p>
+                        <p>{{ event.end_date_time.date }}</p>
                     </div>
                 </div>
-                <a href="{% url 'event_update' event.pk %}" class="btn btn-success">Edit</a>
-                <a href="{% url 'event_delete' event.pk %}" class="btn btn-danger">Delete</a>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Location:</strong></p>
+                    </div>
+                    <div class="col-md-6">
+                        {% if event.location %}
+                            <p>{{ event.location }}</p>
+                        {% else %}
+                            <p>Open Laptop and connect with us from anywhere.</p>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+                {% comment %} <p>{{ event.location }}</p> {% endcomment %}
+                 {% if request.user.user_type == 'manager' %}
+                 <a href="{% url 'event_update' event.pk %}" class="btn btn-success">Edit</a>
+                 <a href="{% url 'event_delete' event.pk %}" class="btn btn-danger">Delete</a>
+                 {% else %}
+                    <a href="#" class="btn btn-primary">Participate</a>
+                 {% endif %}
                 <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
             </div>
         </div>
     </div>
+    <div class="card col-md-6 col-lg-6">
+        <ul class="list-group list-group-flush">
+          
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <li class="list-group-item">
+                        <p>Organizers Type</p>
+                    </li>
+                </div>
+                <div class="col-md-6">
+                    <li class="list-group-item">
+                        <p class="text-primary">{{  event.organizers_type}}</p></li>
+                </div>
+            </div>
+
+             <div class="row">
+                 <div class="col-md-6">
+                      <li class="list-group-item">
+                        <p>Event Type</p>
+                      </li>
+                  </div>
+                  <div class="col-md-6">
+                       <li class="list-group-item">
+                        <p class="text-primary">{{ event.event_type }}</p></li>
+                  </div>
+             </div>
+
+             <div class="row">
+                 <div class="col-md-6">
+                      <li class="list-group-item">
+                          <p>Event For</p></li>
+                  </div>
+                  <div class="col-md-6">
+                        <li class="list-group-item">
+                            <p class="text-primary">{{ event.event_for }}</p></li>
+                  </div>
+             </div>
+
+             <div class="row">
+                <div class="col-md-6">
+                     <li class="list-group-item">
+                         <p>End Time</p></li>
+                </div>
+                 <div class="col-md-6">
+                       <li class="list-group-item">
+                         <p class="text-primary">{{ event.end_date_time.time }}</p></li>
+                 </div>
+            </div>
+
+             <div class="row">
+                  <div class="col-md-6">
+                       <li class="list-group-item">
+                            <p>Start Time</p></li>
+                   </div>
+                    <div class="col-md-6">
+                         <li class="list-group-item">
+                             <p class="text-primary">{{ event.start_date_time.time }}</p></li>
+                    </div>
+             </div>
+
+             <div class="row">
+                    <div class="col-md-6">
+                          <li class="list-group-item">
+                            <p>Max Participants</p></li>
+                    </div>
+                     <div class="col-md-6">
+                          <li class="list-group-item">
+                            <p class="text-primary">{{ event.max_participants }}</p></li>
+                    </div>
+              </div>
+
+              <div class="row">
+                    <div class="col-md-6">
+                          <li class="list-group-item">
+                            <p>Max Organizers</p></li>
+                    </div>
+                     <div class="col-md-6">
+                           <li class="list-group-item">
+                            <p class="text-primary">{{ event.max_organizers }}</p></li>
+                    </div>
+              </div>
+        </ul>
+      </div>
 </div>
 {% endblock main_content %}
 {% block page_JS %}

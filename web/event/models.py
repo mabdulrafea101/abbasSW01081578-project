@@ -20,8 +20,25 @@ class Event(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     start_date_time = models.DateTimeField()
     end_date_time = models.DateTimeField()
+    location = models.CharField(max_length=255, blank=True, null=True) 
     max_organizers = models.PositiveIntegerField(default=1)  # Quota set by manager
+    max_participants = models.PositiveIntegerField(default=1)  # Quota set by manager
     organizers = models.ManyToManyField(User, through='OrganizerApplication', related_name='events')
+    organizers_type = models.CharField(max_length=50, choices=[
+        ('student', 'Student'),
+        ('teacher', 'Teacher'),
+    ], default='teacher')
+    event_for = models.CharField(max_length=50, choices=[
+        ('student_only', 'Student Only'),
+        ('teacher_only', 'Teacher Only'),
+        ('everyone', 'Everyone'),
+    ], default='student_only')
+    event_type = models.CharField(max_length=50, choices=[
+        ('online', 'Online'),
+        ('physical', 'Physical'),
+    ], default='physical')
+    is_done = models.BooleanField(default=False)
+    is_cancelled = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

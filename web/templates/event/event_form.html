@@ -9,22 +9,66 @@
 {% block page_title %}Event Create{% endblock page_title %}
 {% block main_content %}
 
-<div class="col-xl-6">
+<div class="col-xl-12">
   <!-- HTML5 Inputs -->
   <div class="card mb-6">
     <h2 class="card-header">
       {% if object %}Edit Event{% else %}Create Event{% endif %}
     </h2>
     <div class="card-body">
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %} {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a href="{% url 'event_list' %}" class="btn btn-secondary">Cancel</a>
-      </form>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %} 
+            <div class="mt-4 row">
+                
+                <div class="col-md-6">
+                    {{ form.title.label_tag }} {{ form.title }}
+                    {{ form.organizers_type.label_tag }} {{ form.organizers_type }}
+                    
+                    {{ form.event_type.label_tag }} {{ form.event_type }}
+                    {{ form.start_date_time.label_tag }} {{ form.start_date_time }}
+                    {{ form.event_for.label_tag }} {{ form.event_for }}
+                    {{ form.description.label_tag }} {{ form.description }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.category.label_tag }} {{ form.category }}
+                    {{ form.max_organizers.label_tag }} {{ form.max_organizers }}
+                    {{ form.location.label_tag }} {{ form.location }}
+                    {{ form.end_date_time.label_tag }} {{ form.end_date_time }}
+                    {{ form.max_participants.label_tag }} {{ form.max_participants }}
+                    {{ form.images.label_tag }} {{ form.images }}
+                    <button type="submit" class="mt-2 btn btn-primary">Save</button>
+                    <a href="{% url 'event_list' %}" class="mt-2 btn btn-secondary">Cancel</a>
+                    
+                </div>
+                
+            </div>
+        </form>
     </div>
   </div>
 </div>
 
 {% endblock main_content %} {% block page_JS %}
 <script src="{% static 'assets/js/form-basic-inputs.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventTypeSelect = document.getElementById('id_event_type'); // Assuming 'id_event_type' is the ID of your event_type select element
+        const locationInput = document.getElementById('id_location'); // Assuming 'id_location' is the ID of your location input element
+    
+        function updateLocationField() {
+            if (eventTypeSelect.value === 'online') {
+                locationInput.disabled = true;
+                locationInput.value = ''; // Clear the location field
+            } else {
+                locationInput.disabled = false;
+                locationInput.required = true; // Make it required again
+            }
+        }
+    
+        // Run on page load
+        updateLocationField();
+    
+        // Run when the event type changes
+        eventTypeSelect.addEventListener('change', updateLocationField);
+    });
+    </script>
 {% endblock page_JS %}

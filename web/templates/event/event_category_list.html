@@ -1,29 +1,79 @@
 {% extends "base.html" %}
 {% load static %}
 {% block page_CSS %}
-
+<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
 {% endblock page_CSS %}
 {% block page_title %}
 Events List
 {% endblock page_title %}
 {% block main_content %}
-<div class="container">
-    <h2>Event Categories</h2>
-    <a href="{% url 'event_category_create' %}" class="btn btn-primary mb-3">Create Category</a>
-    <ul class="list-group">
-        {% for category in categories %}
-        <li class="list-group-item">
-            <a href="{% url 'event_category_detail' category.pk %}">{{ category.name }}</a>
-            <a href="{% url 'event_category_update' category.pk %}" class="btn btn-sm btn-warning">Edit</a>
-            <a href="{% url 'event_category_delete' category.pk %}" class="btn btn-sm btn-danger">Delete</a>
-            <p> Events: {{ category.events.count }} </p>
-        </li>
-        {% empty %}
-        <li class="list-group-item">No categories available.</li>
-        {% endfor %}
-    </ul>
+<div class="row mt-4 mb-12 g-6">
+    <div class="col-md-10">
+        <h2>Event Categories</h2>
+    </div>
+    <div class="col-md-2">
+        <a href="{% url 'event_category_create' %}" class="btn btn-primary mb-3">Create Category</a>
+    </div>
 </div>
+
+
+<div class="row mb-12 g-6">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Event Categories List</h4>
+                <table id="event_category_list" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>No. of Events</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                        <tr>
+                            <td><a href="{% url 'event_category_detail' category.pk %}">{{ category.name }}</a></td>
+                            <td><span class="badge badge-center bg-label-info">{{ category.events.count }}</span></td>
+                            <td>{{ category.description|truncatechars:30 }}</td>
+                            <td>
+                                <p>
+                                    <a href="{% url 'event_category_update' category.pk %}" class="btn btn-primary">Edit</a>
+                                    <a href="{% url 'event_category_delete' category.pk %}" class="btn btn-danger">Delete</a>
+                                </p>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">No categories available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Category</th>
+                            <th>No. of Events</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 {% endblock main_content %}
 {% block page_JS %}
-
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
+<script>
+    $(document).ready(function() {
+        new DataTable('#event_category_list');
+    });
+</script>
 {% endblock page_JS %}

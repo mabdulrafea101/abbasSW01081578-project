@@ -1,29 +1,94 @@
 {% extends "base.html" %}
 {% load static %}
 {% block page_CSS %}
+<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
 
 {% endblock page_CSS %}
 {% block page_title %}
 Events List
 {% endblock page_title %}
 {% block main_content %}
-<div class="container">
-    <h2>Event List</h2>
-    <a href="{% url 'event_create' %}" class="btn btn-primary mb-3">Create Event</a>
-    <ul class="list-group">
-        {% for event in events %}
-        <li class="list-group-item">
-            <a href="{% url 'event_detail' event.pk %}"> {{ event.title }} </a>
-            <span class="badge bg-info">{{ event.category }}</span>
-            <a href="{% url 'event_update' event.pk %}" class="btn btn-sm btn-warning">Edit</a>
-            <a href="{% url 'event_delete' event.pk %}" class="btn btn-sm btn-danger">Delete</a>
-        </li>
-        {% empty %}
-        <li class="list-group-item">No events available.</li>
-        {% endfor %}
-    </ul>
+<div class="row mt-4 mb-12 g-6">
+    <div class="col-md-10">
+        <h2>Event List</h2>
+    </div>
+    <div class="col-md-2">
+        <a href="{% url 'event_create' %}" class="btn btn-success mb-3">Create Event</a>
+    </div>
 </div>
+
+<div class="row mb-12 g-6">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Events</h5>
+                <table id="event_list" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td><a href="{% url 'event_detail' event.pk %}"> {{ event.title }} </a></td>
+                            <td>{{event.category}}</td>
+                            <td>{{event.description|truncatechars:30}}</td>
+                            <td>{{ event.start_date_time.date }}</td>
+                            <td>{{ event.end_date_time.date }}</td>
+                            {% if request.user.user_type == manager %}
+                            <td>
+                                <p>
+                                    <a href="{% url 'event_update' event.pk %}" class="btn btn-primary">Edit</a>
+                                    <a href="{% url 'event_delete' event.pk %}" class="btn btn-danger">Delete</a>
+                                </p>
+                            </td>
+                            {% else %}
+                            <td>
+                                <p>
+                                    <a href="{% url 'event_detail' event.pk %}" class="btn btn-primary">View</a>
+                                </p>
+                            </td>
+                            {% endif %}
+                            
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">No events available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Event</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {% endblock main_content %}%
 {% block page_JS %}
 
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
+<script>
+    $(document).ready(function() {
+        new DataTable('#event_list');
+    });
+</script>
 {% endblock page_JS %}
