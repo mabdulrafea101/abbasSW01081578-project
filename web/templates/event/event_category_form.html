@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_CSS %}
+
+{% endblock page_CSS %}
+{% block page_title %}
+Category Create
+{% endblock page_title %}
+{% block main_content %}
+<div class="container">
+    <h2>{% if object %}Edit Category{% else %}Create Category{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'event_category_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock main_content %}
+{% block page_JS %}
+
+{% endblock page_JS %}

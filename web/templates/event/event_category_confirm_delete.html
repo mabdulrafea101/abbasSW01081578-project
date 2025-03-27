@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_CSS %}
+
+{% endblock page_CSS %}
+{% block page_title %}
+Category Delete
+{% endblock page_title %}
+{% block main_content %}
+  <h2>Delete Category</h2>
+  <p>Are you sure you want to delete "{{ eventcategory.name }}"?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a href="{% url 'event_category_list' %}" class="btn btn-secondary"
+      >Cancel</a
+    >
+  </form>
+</div>
+{% endblock main_content %}
+{% block page_JS %}
+
+{% endblock page_JS %}
+

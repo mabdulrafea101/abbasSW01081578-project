@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_CSS %}
+
+{% endblock page_CSS %}
+{% block page_title %}
+Events List
+{% endblock page_title %}
+{% block main_content %}
+
+<div class="mb-4 row">
+    <div class="col-md-8 col-lg-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ event.title }}</h5>
+                <h6 class="card-subtitle">{{ event.category }}</h6>
+                <img class="img-fluid d-flex mx-auto my-6 rounded" src="{{ event.images.url }}" alt="Card image cap">
+                <p class="card-text">{{ event.description }}.</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Start Time:</strong></p>
+                        <p><strong>End Time:</strong></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p> {{ event.end_date_time }}</p>
+                        <p>{{ event.end_date_time }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'event_update' event.pk %}" class="btn btn-success">Edit</a>
+                <a href="{% url 'event_delete' event.pk %}" class="btn btn-danger">Delete</a>
+                <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main_content %}
+{% block page_JS %}
+
+{% endblock page_JS %}

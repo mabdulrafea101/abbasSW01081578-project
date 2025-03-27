@@ -1,6 +1,23 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Profile
+from django.contrib.auth.forms import UserCreationForm
+
+
+class CustomUserCreationFormAdmin(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'first_name', 'last_name', 'user_type', 'phone','username')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Limit user type choices to teacher and student for signup
+        self.fields['user_type'].choices = [
+            ('manager', 'Manager'),
+            ('student', 'Student'),
+            ('teacher', 'Teacher'),
+        ]
+        self.fields['user_type'].required = False
 
 
 class UserAdmin(UserAdmin):
@@ -27,6 +44,7 @@ class UserAdmin(UserAdmin):
             'is_account_confirmed',
         )}),
     )
+    add_form = CustomUserCreationFormAdmin
 
 
 admin.site.register(CustomUser, UserAdmin)

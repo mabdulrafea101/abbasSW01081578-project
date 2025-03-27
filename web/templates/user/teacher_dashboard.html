@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block main_content %}
+<h1>Dashboard {{ request.user.user_type }}</h1>
+<ul>
+  {% for user in dashboard_data %}
+  <li>{{ user.username }} - {{ user.email }}</li>
+  {% endfor %}
+</ul>
+{% endblock main_content %}

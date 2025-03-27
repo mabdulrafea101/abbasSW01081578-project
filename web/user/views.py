@@ -1,9 +1,11 @@
 from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 #from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
+
+from .mixins import ManagerRequiredMixin
 from .models import CustomUser, Profile
 from .forms import CustomUserCreationForm, ProfileForm
 
@@ -12,7 +14,7 @@ from .forms import CustomUserCreationForm, ProfileForm
 
 class CustomLoginView(LoginView):
     template_name = 'user/login.html'
-    
+
     def form_valid(self, form):
         user = form.get_user()
         if not user.is_account_confirmed and not user.is_superuser:
@@ -22,6 +24,17 @@ class CustomLoginView(LoginView):
             )
             return self.form_invalid(form)
         return super().form_valid(form)
+
+    def get_success_url(self):
+        user = self.request.user
+        if user.user_type == 'student':
+            return reverse('student_dashboard')
+        elif user.user_type == 'teacher':
+            return reverse('teacher_dashboard')
+        elif user.user_type == 'manager':
+            return reverse('manager_dashboard')
+        else:
+            return reverse('home')  # Or a default dashboard
     
 
 class SignUpView(CreateView):
@@ -40,7 +53,7 @@ class SignUpView(CreateView):
         return response
     
 
-class PendingUserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class PendingUserListView(ManagerRequiredMixin, UserPassesTestMixin, ListView):
     model = CustomUser
     template_name = 'user/pending_users.html'
     context_object_name = 'pending_users'
@@ -53,7 +66,7 @@ class PendingUserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             .exclude(is_superuser=True)
     
 
-class ConfirmUserView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class ConfirmUserView(ManagerRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CustomUser
     fields = ['is_account_confirmed']
     template_name = 'user/confirm_user.html'
@@ -83,20 +96,31 @@ class ConfirmUserView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return {}
 
 
-class DashboardView(LoginRequiredMixin, ListView):
-    model = CustomUser
-    template_name = 'user/dashboard.html'
-    context_object_name = 'users'
+class BaseDashboardView(LoginRequiredMixin, ListView):
+    # Common dashboard logic here (e.g., template_name)
+    context_object_name = 'dashboard_data'
+    model = CustomUser  # Or remove this if the queryset is always custom
+
+
+class ManagerDashboardView(BaseDashboardView):
+    template_name = 'user/manager_dashboard.html'
 
     def get_queryset(self):
-        # Assuming you want to pass all CustomUser objects to the template
-        if self.request.user.user_type == 'manager':
-            return CustomUser.objects.all()
-        elif self.request.user.user_type == 'teacher':
-            return CustomUser.objects.filter(user_type='student')
-        else:  # student
+        return CustomUser.objects.all()  # All users for manager
 
-            return CustomUser.objects.filter(user_type='teacher')
+
+class TeacherDashboardView(BaseDashboardView):
+    template_name = 'user/teacher_dashboard.html'
+    
+    def get_queryset(self):
+        return CustomUser.objects.filter(user_type='student')  # Teachers see students
+
+
+class StudentDashboardView(BaseDashboardView):
+    template_name = 'user/student_dashboard.html'
+    
+    def get_queryset(self):
+        return CustomUser.objects.filter(user_type='teacher')  # Students see teachers
 
 
 class ProfileDetailView(LoginRequiredMixin, DetailView):

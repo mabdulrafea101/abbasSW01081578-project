@@ -1,0 +1,30 @@
+
+{% extends "base.html" %} 
+{% load static %}
+
+
+{% block page_CSS %}
+<link rel="stylesheet" href="{% static 'assets/css/form-basic-inputs.css' %}">
+{% endblock page_CSS %}
+{% block page_title %}Event Create{% endblock page_title %}
+{% block main_content %}
+
+<div class="col-xl-6">
+  <!-- HTML5 Inputs -->
+  <div class="card mb-6">
+    <h2 class="card-header">
+      {% if object %}Edit Event{% else %}Create Event{% endif %}
+    </h2>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %} {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'event_list' %}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock main_content %} {% block page_JS %}
+<script src="{% static 'assets/js/form-basic-inputs.js' %}"></script>
+{% endblock page_JS %}

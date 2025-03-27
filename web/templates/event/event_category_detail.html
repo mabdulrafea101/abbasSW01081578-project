@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_CSS %}
+
+{% endblock page_CSS %}
+{% block page_title %}
+Category Detail
+{% endblock page_title %}
+{% block main_content %}
+<div class="container">
+    <h2>{{ eventcategory.name }}</h2>
+    <p>{{ eventcategory.description }}</p>
+    <a href="{% url 'event_category_update' eventcategory.pk %}" class="btn btn-warning">Edit</a>
+    <a href="{% url 'event_category_delete' eventcategory.pk %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'event_category_list' %}" class="btn btn-secondary">Back to Categories</a>
+</div>
+{% endblock main_content %}
+{% block page_JS %}
+
+{% endblock page_JS %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_CSS %}
+
+{% endblock page_CSS %}
+{% block page_title %}
+Events List
+{% endblock page_title %}
+{% block main_content %}
+<div class="container">
+    <h2>Event Categories</h2>
+    <a href="{% url 'event_category_create' %}" class="btn btn-primary mb-3">Create Category</a>
+    <ul class="list-group">
+        {% for category in categories %}
+        <li class="list-group-item">
+            <a href="{% url 'event_category_detail' category.pk %}">{{ category.name }}</a>
+            <a href="{% url 'event_category_update' category.pk %}" class="btn btn-sm btn-warning">Edit</a>
+            <a href="{% url 'event_category_delete' category.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            <p> Events: {{ category.events.count }} </p>
+        </li>
+        {% empty %}
+        <li class="list-group-item">No categories available.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock main_content %}
+{% block page_JS %}
+
+{% endblock page_JS %}
