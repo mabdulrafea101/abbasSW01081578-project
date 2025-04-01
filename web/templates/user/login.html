@@ -1,123 +1,178 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
+
+
+<!doctype html>
+
+<html
+  lang="en"
+  class="layout-wide customizer-hide"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Login Pages | UNI PRS</title>
+
     <meta name="description" content="" />
-    <meta name="author" content="" />
 
-    <title>Peer Rating System- Login</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'assets/img/favicon/favicon.ico' %}" />
 
-    <!-- Custom fonts for this template-->
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="{% static 'vendor/fontawesome-free/css/all.min.css' %}"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-      rel="stylesheet"
-    />
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet" />
 
-    <!-- Custom styles for this template-->
-    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'assets/vendor/fonts/iconify-icons.css' %}" />
+
+    <!-- Core CSS -->
+    <!-- build:css assets/vendor/css/theme.css  -->
+
+    <link rel="stylesheet" href="{% static 'assets/vendor/css/core.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/css/demo.css' %}" />
+
+    <!-- Vendors CSS -->
+
+    <link rel="stylesheet" href="{% static 'assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css' %}" />
+
+    <!-- endbuild -->
+
+    <!-- Page CSS -->
+    <!-- Page -->
+    <link rel="stylesheet" href="{% static 'assets/vendor/css/pages/page-auth.css' %}" />
+
+    <!-- Helpers -->
+    <script src="{% static 'assets/vendor/js/helpers.js' %}"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+
+    <script src="{% static 'assets/js/config.js' %}"></script>
   </head>
 
-  <body class="bg-gradient-primary">
-    <div class="container">
-      <!-- Outer Row -->
-      <div class="row justify-content-center">
-        <div class="col-xl-10 col-lg-12 col-md-9">
-          <div class="card o-hidden border-0 shadow-lg my-5">
-            {% if messages %} {% for message in messages %}
-            <div
-              class="alert alert-{{ message.tags }} alert-dismissible fade show"
-            >
-              {{ message }}
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-              ></button>
-            </div>
-            {% endfor %} {% endif %}
-            <div class="card-body p-0">
-              <!-- Nested Row within Card Body -->
-              <div class="row">
-                <div class="col-lg-6 d-none d-lg-block bg-login-image">
-                  <img
-                    src="{% static 'img/logo.jpeg' %}"
-                    alt="Login Image"
-                    class="img-fluid"
-                  />
-                </div>
-                <div class="col-lg-6">
-                  <div class="p-5">
-                    <div class="text-center">
-                      <h1 class="h4 text-gray-900 mb-4">Welcome TO!</h1>
-                      <h3 class="h2 text-gray-700 mb-4">Loop & Echo</h3>
+  <body>
+    <!-- Content -->
+
+    <div class="container-xxl">
+      <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+          <!-- Register -->
+          <div class="card px-sm-6 px-0">
+            <div class="card-body">
+              <!-- Logo -->
+              <div class="app-brand justify-content-center">
+                <a href="index.html" class="app-brand-link gap-2">
+                  <span class="app-brand-logo demo">
+                    <span class="text-primary">
+                      <svg width="150" viewBox="0 0 150 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <defs>
+                          <path d="M10 20 L20 30 L30 20 L20 10 Z" id="letter-path"></path>
+                          
+                          <path
+                            d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z"
+                            id="decorative-path"
+                          ></path>
+                        </defs>
+                        
+                        <g stroke="none" stroke-width="1" fill="currentColor" fill-rule="evenodd">
+                          <g transform="translate(-10.000000, -15.000000)">
+                            <!-- U -->
+                            <g transform="translate(10, 15)">
+                              <text x="0" y="30" font-size="30" font-weight="bold">U</text>
+                            </g>
+                            
+                            <!-- N -->
+                            <g transform="translate(40, 15)">
+                              <text x="0" y="30" font-size="30" font-weight="bold">N</text>
+                            </g>
+                            
+                            <!-- I -->
+                            <g transform="translate(70, 15)">
+                              <text x="0" y="30" font-size="30" font-weight="bold">I</text>
+                            </g>
+                            
+                          </g>
+                        </g>
+                      </svg>
+                    </span>
+                  </span>
+                  <span class="app-brand-text demo text-heading fw-bold">Peer Rating System</span>
+                </a>
+              </div>
+              <!-- /Logo -->
+              <h4 class="mb-1">Welcome to UNI Peer Rating</h4>
+              <p class="mb-6">Please sign-in to your account and start the adventure</p>
+
+              <form class="user" action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="mb-8">
+                  <div class="d-flex justify-content-between">
+                    <div class="form-check mb-0">
+                      <input class="form-check-input" type="checkbox" id="remember-me" />
+                      <label class="form-check-label" for="remember-me"> Remember Me </label>
                     </div>
-                    <form class="user" action="{% url 'login' %}" method="post">
-                      {% csrf_token %}
-                      <div class="form-group">{{form.as_p}}</div>
-                      <div class="form-group">
-                        <div class="custom-control custom-checkbox small">
-                          <input
-                            type="checkbox"
-                            class="custom-control-input"
-                            id="customCheck"
-                          />
-                          <label class="custom-control-label" for="customCheck"
-                            >Remember Me</label
-                          >
-                        </div>
-                      </div>
-                      <button
-                        type="submit"
-                        class="btn btn-primary btn-user btn-block"
-                      >
-                        Login
-                      </button>
-                      <hr />
-                      <a href="#" class="btn btn-google btn-user btn-block">
-                        <i class="fab fa-google fa-fw"></i> Login with Google
-                      </a>
-                      <a href="#" class="btn btn-facebook btn-user btn-block">
-                        <i class="fab fa-facebook-f fa-fw"></i> Login with
-                        Facebook
-                      </a>
-                    </form>
-                    <hr />
-                    <div class="text-center">
-                      <a class="small" href="#">Forgot Password?</a>
-                    </div>
-                    <div class="text-center">
-                      <a class="small" href="{% url 'signup' %}"
-                        >Create an Account!</a
-                      >
-                    </div>
+                    <a href="auth-forgot-password-basic.html">
+                      <span>Forgot Password?</span>
+                    </a>
                   </div>
                 </div>
-              </div>
+                <div class="mb-6">
+                  <button class="btn btn-primary d-grid w-100" type="submit">Login</button>
+                </div>
+              </form>
+
+              <p class="text-center">
+                <span>New on our platform?</span>
+                <a href="{% url 'signup' %}">
+                  <span>Create an account</span>
+                </a>
+              </p>
             </div>
           </div>
+          <!-- /Register -->
         </div>
       </div>
     </div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- / Content -->
 
-    <!-- Core plugin JavaScript-->
-    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <div class="buy-now">
+      <a
+        href="https://themeselection.com/item/sneat-dashboard-pro-bootstrap/"
+        target="_blank"
+        class="btn btn-danger btn-buy-now"
+        >Upgrade to Pro</a
+      >
+    </div>
 
-    <!-- Custom scripts for all pages-->
-    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+    <!-- Core JS -->
+
+    <script src="{% static 'assets/vendor/libs/jquery/jquery.js' %}"></script>
+
+    <script src="{% static 'assets/vendor/libs/popper/popper.js' %}"></script>
+    <script src="{% static 'assets/vendor/js/bootstrap.js' %}"></script>
+
+    <script src="{% static 'assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js' %}"></script>
+
+    <script src="{% static 'assets/vendor/js/menu.js' %}"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+
+    <!-- Main JS -->
+
+    <script src="{% static 'assets/js/main.j' %}s"></script>
+
+    <!-- Page JS -->
+
+    <!-- Place this tag before closing body tag for github widget button. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
   </body>
 </html>

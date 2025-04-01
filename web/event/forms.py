@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event, EventCategory, OrganizerApplication
+from .models import Event, EventCategory, Application
 
 
 class EventCategoryForm(forms.ModelForm):
@@ -35,9 +35,9 @@ class EventForm(forms.ModelForm):
         }
 
 
-class OrganizerApplicationForm(forms.ModelForm):
+class ApplicationForm(forms.ModelForm):
     class Meta:
-        model = OrganizerApplication
+        model = Application
         fields = ['event', 'user', 'status']
         widgets = {
             'event': forms.Select(attrs={'class': 'form-control'}),

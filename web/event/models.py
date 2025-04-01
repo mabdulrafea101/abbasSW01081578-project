@@ -22,8 +22,9 @@ class Event(models.Model):
     end_date_time = models.DateTimeField()
     location = models.CharField(max_length=255, blank=True, null=True) 
     max_organizers = models.PositiveIntegerField(default=1)  # Quota set by manager
-    max_participants = models.PositiveIntegerField(default=1)  # Quota set by manager
-    organizers = models.ManyToManyField(User, through='OrganizerApplication', related_name='events')
+    max_participants = models.PositiveIntegerField(default=0)  # Quota set by manager
+    max_attendees = models.PositiveIntegerField(default=1)  # Quota set by manager
+    organizers = models.ManyToManyField(User, through='Application', related_name='events')
     organizers_type = models.CharField(max_length=50, choices=[
         ('student', 'Student'),
         ('teacher', 'Teacher'),
@@ -44,9 +45,15 @@ class Event(models.Model):
         return self.title
 
 
-class OrganizerApplication(models.Model):
+class Application(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='applications')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    apply_as = models.CharField(max_length=50, choices=[
+        ('organizer', 'Organizer'),
+        ('participant', 'Participant'),
+        ('attendee', 'Attendee'),
+    ], default='attendee')
+    apply_date_time = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=[
         ('pending', 'Pending'),
         ('approved', 'Approved'),

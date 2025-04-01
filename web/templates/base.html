@@ -283,6 +283,43 @@
               </ul>
             </li>
 
+            {% if request.user.user_type == 'student' or request.user.user_type == 'teacher' %}
+            <!-- Review Events -->
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">Review Events</span>
+            </li>
+            <li class="menu-item">
+              <a
+                href="#"
+                target="_blank"
+                class="menu-link"
+              >
+                <i class="menu-icon tf-icons bx bxs-badge-check"></i>
+                <div class="text-truncate" data-i18n="Email">Review on Events</div>
+                <div
+                  class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
+                >
+                  5
+                </div>
+              </a>
+            </li>
+
+            <li class="menu-item">
+              <a
+                href="#"
+                target="_blank"
+                class="menu-link"
+              >
+                <i class="menu-icon tf-icons bx bxs-badge-check"></i>
+                <div class="text-truncate" data-i18n="Email">Reviews for Me</div>
+                <div
+                  class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
+                >
+                  5
+                </div>
+              </a>
+            </li>
+
             <!-- Leveling and Badge System -->
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Levels &amp; Badges</span>
@@ -332,28 +369,65 @@
                 </div>
               </a>
             </li>
+            {% else %}
+           <!-- Leveling and Badge System -->
+            <li class="menu-header small text-uppercase">
+              
+              <span class="menu-header-text">Event Applicants</span>
+            </li>
             <li class="menu-item">
               <a
-                href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/app-kanban.html"
+                href="#"
                 target="_blank"
                 class="menu-link"
               >
-                <i class="menu-icon tf-icons bx bx-grid"></i>
-                <div class="text-truncate" data-i18n="Kanban">Kanban</div>
+              <i class='menu-icon tf-icons bx bxs-bookmark-alt-plus'></i>
+                <div class="text-truncate" data-i18n="Email">Organizer Requests</div>
                 <div
                   class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
                 >
-                  Pro
+                  5
                 </div>
               </a>
             </li>
+            <li class="menu-item">
+              <a
+                href="#"
+                target="_blank"
+                class="menu-link"
+              >
+                <i class="menu-icon tf-icons bx bxs-book-add"></i>
+                <div class="text-truncate" data-i18n="Chat">Participant Requests</div>
+                <div
+                  class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
+                >
+                  1
+                </div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href=""
+                target="_blank"
+                class="menu-link"
+              >
+                <i class="menu-icon tf-icons bx bxs-add-to-queue"></i>
+                <div class="text-truncate" data-i18n="Leadboard">Attendee requests</div>
+                <div
+                  class="badge rounded-pill bg-label-success text-uppercase fs-tiny ms-auto"
+                >
+                  10
+                </div>
+              </a>
+            </li>
+            {% endif %}
 
 
+            {% if request.user.user_type == 'manager' %}
             <!-- User Management -->
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">User Management</span>
             </li>
-            {% if request.user.user_type == 'manager' %}
             <li class="menu-item">
               <a href="{% url 'all_users' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-user-account"></i>
@@ -382,6 +456,10 @@
             </li>
 
             {% else %}
+            <!-- User Management -->
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">View User</span>
+            </li>
             <li class="menu-item">
               <a
                 href=""

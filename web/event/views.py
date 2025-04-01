@@ -3,8 +3,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from user.mixins import ManagerRequiredMixin
-from .models import Event, EventCategory, OrganizerApplication
-from .forms import EventForm, EventCategoryForm, OrganizerApplicationForm
+from .models import Event, EventCategory, Application
+from .forms import EventForm, EventCategoryForm, ApplicationForm
 from django.contrib import messages
 
 
@@ -72,9 +72,9 @@ class EventDeleteView(ManagerRequiredMixin, DeleteView):
     success_url = reverse_lazy('event_list')
 
 
-class OrganizerApplicationCreateView(LoginRequiredMixin, CreateView):
-    model = OrganizerApplication
-    form_class = OrganizerApplicationForm
+class ApplicationCreateView(LoginRequiredMixin, CreateView):
+    model = Application
+    form_class = ApplicationForm
     template_name = 'event/organizer_application_form.html'
     success_url = reverse_lazy('event_list')
 
@@ -83,18 +83,18 @@ class OrganizerApplicationCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class OrganizerApplicationListView(LoginRequiredMixin, ListView):
-    model = OrganizerApplication
+class ApplicationListView(LoginRequiredMixin, ListView):
+    model = Application
     template_name = 'event/organizer_application_list.html'
     context_object_name = 'applications'
 
     def get_queryset(self):
-        return OrganizerApplication.objects.filter(event__organizers=self.request.user)
+        return Application.objects.filter(event__organizers=self.request.user)
 
 
-class OrganizerApplicationUpdateView(LoginRequiredMixin, UpdateView):
-    model = OrganizerApplication
-    form_class = OrganizerApplicationForm
+class ApplicationUpdateView(LoginRequiredMixin, UpdateView):
+    model = Application
+    form_class = ApplicationForm
     template_name = 'event/organizer_application_form.html'
     success_url = reverse_lazy('organizer_application_list')
 

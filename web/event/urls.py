@@ -10,9 +10,9 @@ from .views import (
     EventDetailView,
     EventUpdateView,
     EventDeleteView,
-    OrganizerApplicationCreateView,
-    OrganizerApplicationListView,
-    OrganizerApplicationUpdateView,
+    ApplicationCreateView,
+    ApplicationListView,
+    ApplicationUpdateView,
 
 )
 
@@ -31,9 +31,8 @@ urlpatterns = [
     path('update/<int:pk>/', EventUpdateView.as_view(), name='event_update'),
     path('delete/<int:pk>/', EventDeleteView.as_view(), name='event_delete'),
 
-    # Organizer Application URLs
-    path('applications/create/', OrganizerApplicationCreateView.as_view(), name='organizer_application_create'),
-    path('applications/', OrganizerApplicationListView.as_view(), name='organizer_application_list'),
-    path('applications/update/<int:pk>/', OrganizerApplicationUpdateView.as_view(), name='organizer_application_update'),
+    # Application URLs
+    path('applications/create/', ApplicationCreateView.as_view(), name='organizer_application_create'),
+    path('applications/', ApplicationListView.as_view(), name='organizer_application_list'),
+    path('applications/update/<int:pk>/', ApplicationUpdateView.as_view(), name='organizer_application_update'),
 ]
-
