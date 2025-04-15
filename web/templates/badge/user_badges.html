@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Badges /</span> My Badges
+  </h4>
+
+  <div class="row">
+    <!-- My Earned Badges Section -->
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">My Earned Badges</h5>
+        </div>
+        <div class="card-body">
+          {% if badges %}
+            {% for category, data in badges_by_category.items %}
+              {% if data.badges %}
+                <h6 class="mt-4 mb-3">{{ data.label }}</h6>
+                <div class="row g-3 mb-4">
+                  {% for badge in data.badges %}
+                    <div class="col-md-3 col-sm-6">
+                      <div class="card h-100">
+                        <div class="card-body text-center">
+                          <div class="badge-icon mb-3">
+                            <span style="font-size: 3rem;">{{ badge.badge_type.icon }}</span>
+                          </div>
+                          <h5 class="card-title">{{ badge.badge_type.name }}</h5>
+                          <div class="badge bg-label-primary">Level {{ badge.badge_type.level }}</div>
+                          <p class="card-text mt-3">{{ badge.badge_type.description }}</p>
+                          <div class="text-muted small">Earned on {{ badge.earned_at|date:"F d, Y" }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <div class="alert alert-info">
+              <p>You haven't earned any badges yet. Participate in events and rate organizers to earn badges!</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Badges In Progress Section -->
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Badges In Progress</h5>
+        </div>
+        <div class="card-body">
+          {% if progress_by_category %}
+            {% for category, data in progress_by_category.items %}
+              {% if data.items %}
+                <h6 class="mt-4 mb-3">{{ data.label }}</h6>
+                <div class="row g-3 mb-4">
+                  {% for progress in data.items %}
+                    <div class="col-md-3 col-sm-6">
+                      <div class="card h-100">
+                        <div class="card-body text-center">
+                          <div class="badge-icon mb-3">
+                            <span style="font-size: 3rem; opacity: 0.5;">{{ progress.badge_type.icon }}</span>
+                          </div>
+                          <h5 class="card-title text-muted">{{ progress.badge_type.name }}</h5>
+                          <div class="badge bg-label-secondary">Level {{ progress.badge_type.level }}</div>
+                          <p class="card-text mt-3">{{ progress.badge_type.description }}</p>
+                          <div class="progress mt-3">
+                            <div class="progress-bar" role="progressbar" 
+                                style="width: {{ progress.current_count|floatformat:0 }}%;" 
+                                aria-valuenow="{{ progress.current_count }}" 
+                                aria-valuemin="0" 
+                                aria-valuemax="{{ progress.badge_type.requirement_count }}">
+                              {{ progress.current_count }}/{{ progress.badge_type.requirement_count }}
+                            </div>
+                          </div>
+                          <div class="text-muted small mt-2">
+                            {{ progress.current_count }}/{{ progress.badge_type.requirement_count }} completed
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <div class="alert alert-info">
+              <p>You don't have any badges in progress.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

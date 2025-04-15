@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load badge_filters %}
+
+{% block main_content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <h4 class="fw-bold py-3 mb-4">
+    <span class="text-muted fw-light">Badges /</span> All Available Badges
+  </h4>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Available Badges</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-4">Complete various activities in the system to earn these badges.</p>
+          
+          {% for category, data in badges_by_category.items %}
+            <h6 class="mt-4 mb-3">{{ data.label }}</h6>
+            <div class="row g-3 mb-5">
+              {% for badge in data.badges %}
+                <div class="col-md-3 col-sm-6">
+                  <div class="card h-100 {% if badge.id in earned_badges %}border-success{% endif %}">
+                    <div class="card-body text-center">
+                      <div class="badge-icon mb-3">
+                        <span style="font-size: 3rem; {% if badge.id not in earned_badges %}opacity: 0.5;{% endif %}">
+                          {{ badge.icon }}
+                        </span>
+                      </div>
+                      <h5 class="card-title">{{ badge.name }}</h5>
+                      <div class="badge {% if badge.id in earned_badges %}bg-success{% else %}bg-secondary{% endif %}">
+                        Level {{ badge.level }}
+                      </div>
+                      <p class="card-text mt-3">{{ badge.description }}</p>
+                      
+                      {% if badge.id in earned_badges %}
+                        <div class="badge bg-success mb-2">Earned</div>
+                      {% elif badge.id in badge_progress %}
+                        <div class="progress mt-3">
+                          {% with progress_percentage=badge_progress|get_item:badge.id|multiply:100|divide:badge.requirement_count %}
+                          <div class="progress-bar" role="progressbar" 
+                              style="width: {{ progress_percentage|floatformat:0 }}%;" 
+                              aria-valuenow="{{ badge_progress|get_item:badge.id }}" 
+                              aria-valuemin="0" 
+                              aria-valuemax="{{ badge.requirement_count }}">
+                            {{ badge_progress|get_item:badge.id }}/{{ badge.requirement_count }}
+                          </div>
+                          {% endwith %}
+                        </div>
+                        <div class="text-muted small mt-2">
+                          {{ badge_progress|get_item:badge.id }}/{{ badge.requirement_count }} completed
+                        </div>
+                      {% else %}
+                        <div class="text-muted mt-3">
+                          Requires {{ badge.requirement_count }} actions
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

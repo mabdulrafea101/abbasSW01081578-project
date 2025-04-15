@@ -11,9 +11,12 @@ from .views import (
     EventDetailView,
     EventUpdateView,
     EventDeleteView,
+    OrganizingEventsListView,
     ParticipateEventView,
     ParticipatingEventsListView,
+    ReviewedEventsListView,
     UnparticipateEventView,
+    UnreviewedCompletedEventsView,
 
 )
 
@@ -34,10 +37,13 @@ urlpatterns = [
 
     # Event Organizer URLs
     path('<int:pk>/add-organizer/', AddEventOrganizerView.as_view(), name='event_add_organizer'),
+    path('organizing/', OrganizingEventsListView.as_view(), name='organizing_events'),
 
     # Event Participation URLs
     path('participate/<int:pk>/', ParticipateEventView.as_view(), name='event_participate'),
     path('unparticipate/<int:pk>/', UnparticipateEventView.as_view(), name='event_unparticipate'),
     path('participating/', ParticipatingEventsListView.as_view(), name='participating_events'),
+    path('unreviewed-events/', UnreviewedCompletedEventsView.as_view(), name='unreviewed_events'),
+    path('reviewed-events/', ReviewedEventsListView.as_view(), name='reviewed_events'),
 
 ]

@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}My Participating Events{% endblock %}
+{% block page_CSS %}
+<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.bootstrap5.css">
+{% endblock page_CSS %}
+
+
+{% block page_title %}My Participating Events{% endblock page_title %}
 
 {% block main_content %}
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -15,7 +20,7 @@
         <div class="card-body">
             {% if events %}
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" id="eventsTable">
                     <thead>
                         <tr>
                             <th>Event</th>
@@ -43,7 +48,7 @@
                                 {% if event.status != 'completed' %}
                                 <a href="{% url 'event_unparticipate' event.pk %}" class="btn btn-sm btn-danger">Withdraw</a>
                                 {% elif event.status == 'completed' %}
-                                <a href="{% url 'event_rate' event.pk %}" class="btn btn-sm btn-info"><i class='bx bxs-star'></i> Rate it</a> 
+                                <a href="{% url 'event_rating' event.pk %}" class="btn btn-sm btn-info"><i class='bx bxs-star'></i> Rate it</a> 
                                 {% endif %}
                             </td>
                         </tr>
@@ -61,3 +66,22 @@
     </div>
 </div>
 {% endblock main_content %}
+
+{% block page_JS %}
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#eventsTable').DataTable({
+            "order": [[ 0, "asc" ]],
+            "lengthMenu": [5, 10, 25, 50],
+            "pageLength": 10,
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search events"
+            }
+        });
+    });
+</script>
+{% endblock page_JS %}

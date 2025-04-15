@@ -7,6 +7,7 @@ from django.views import View
 
 from user.mixins import ManagerRequiredMixin
 from .models import Event, EventCategory, EventOrganizer, EventParticipant
+from review.models import OrganizerRating
 from .forms import AddOrganizerForm, EventForm, EventCategoryForm
 from django.contrib import messages
 
@@ -262,3 +263,68 @@ class ParticipatingEventsListView(LoginRequiredMixin, UserPassesTestMixin, ListV
         # Get the participating events
         return Event.objects.filter(participants__user=self.request.user)
 
+
+class UnreviewedCompletedEventsView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """Display completed events that the participant hasn't reviewed yet"""
+    model = Event
+    template_name = 'event/unreviewed_events.html'
+    context_object_name = 'events'
+    
+    def test_func(self):
+        # Only students can view/rate events
+        return self.request.user.user_type == 'student'
+    
+    def get_queryset(self):
+        # Get all completed events where the user is a participant
+        user_events = Event.objects.filter(
+            participants__user=self.request.user,
+            status='completed'
+        )
+        
+        # Filter out events that the user has already rated
+        unreviewed_events = []
+        for event in user_events:
+            # Check if the user has rated any organizer in this event
+            has_rated = OrganizerRating.objects.filter(
+                event=event,
+                participant=self.request.user
+            ).exists()
+            
+            if not has_rated:
+                unreviewed_events.append(event)
+                
+        return unreviewed_events
+
+
+class ReviewedEventsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """Display events that the participant has already reviewed"""
+    model = Event
+    template_name = 'event/reviewed_events.html'
+    context_object_name = 'events'
+    
+    def test_func(self):
+        # Only students can view their reviews
+        return self.request.user.user_type == 'student'
+    
+    def get_queryset(self):
+        # Get all events where the user has submitted at least one rating
+        rated_event_ids = OrganizerRating.objects.filter(
+            participant=self.request.user
+        ).values_list('event_id', flat=True).distinct()
+        
+        # Get the event objects for these IDs
+        return Event.objects.filter(id__in=rated_event_ids)
+    
+
+class OrganizingEventsListView(LoginRequiredMixin, ListView):
+    """View to display all events a user is organizing"""
+    model = Event
+    template_name = 'event/organizing_events.html'
+    context_object_name = 'events'
+    
+    def get_queryset(self):
+        # Run the status update command
+        refresh_event_statuses()
+        
+        # Get events where the user is an organizer
+        return Event.objects.filter(organizers__user=self.request.user)

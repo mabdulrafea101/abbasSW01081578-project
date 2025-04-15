@@ -254,22 +254,31 @@
             {% if request.user.user_type == 'student' or request.user.user_type == 'teacher' %}
             <!-- Review Events -->
             <li class="menu-header small text-uppercase">
-              <span class="menu-header-text">Review Events</span>
+              <span class="menu-header-text">Events As Participant</span>
             </li>
+            <!-- Add to your sidebar navigation menu -->
             <li class="menu-item">
-              <a
-                href="#"
-                target="_blank"
-                class="menu-link"
-              >
-                <i class="menu-icon tf-icons bx bxs-badge-check"></i>
-                <div class="text-truncate" data-i18n="Email">Review on Events</div>
-                <div
+              <a href="{% url 'unreviewed_events' %}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-check-square"></i>
+                  <div class="text-truncate">Review Events</div>
+                  <div
                   class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
                 >
                   5
                 </div>
               </a>
+            </li>
+
+            <li class="menu-item">
+              <a href="{% url 'reviewed_events' %}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-list-check"></i>
+                  <div class="text-truncate">My Reviews</div>
+              </a>
+          </li>
+
+            <!-- Organizing Events -->
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">Events As Organizer</span>
             </li>
 
             <li class="menu-item">
@@ -279,7 +288,7 @@
                 class="menu-link"
               >
                 <i class="menu-icon tf-icons bx bxs-badge-check"></i>
-                <div class="text-truncate" data-i18n="Email">Reviews for Me</div>
+                <div class="text-truncate" data-i18n="review on event">My Event Reviews</div>
                 <div
                   class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
                 >
@@ -287,11 +296,40 @@
                 </div>
               </a>
             </li>
+
+            <li class="menu-item">
+              <a href="{% url 'organizing_events' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+                <div class="text-truncate">Organizing Events</div>
+              </a>
+            </li>
+          
 
             <!-- Leveling and Badge System -->
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Levels &amp; Badges</span>
             </li>
+            <!-- Badge Section -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-award"></i>
+                <div class="text-truncate" data-i18n="Badges">Badges</div>
+                <div class="badge rounded-pill bg-label-success text-uppercase ms-auto">New</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="{% url 'user_badges' %}" class="menu-link">
+                    <div class="text-truncate" data-i18n="My Badges">My Badges</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="{% url 'all_badges' %}" class="menu-link">
+                    <div class="text-truncate" data-i18n="All Badges">All Badges</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
             <li class="menu-item">
               <a
                 href="#"

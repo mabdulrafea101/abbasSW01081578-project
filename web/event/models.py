@@ -85,6 +85,14 @@ class Event(models.Model):
                 return True
                 
         return False
+    
+    def is_reviewed_by_user(self, user):
+        """Check if the event has been reviewed by the given user"""
+        from review.models import OrganizerRating
+        return OrganizerRating.objects.filter(
+            event=self,
+            participant=user
+        ).exists()
 
 
 class EventOrganizer(models.Model):

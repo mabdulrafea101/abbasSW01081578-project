@@ -22,8 +22,8 @@ Events List
                 <p class="card-text">{{ event.description }}.</p>
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Start Time:</strong></p>
-                        <p><strong>End Time:</strong></p>
+                        <p><strong>Start Date:</strong></p>
+                        <p><strong>End Date:</strong></p>
                     </div>
                     <div class="col-md-6">
                         <p> {{ event.start_date_time.date }}</p>
@@ -133,7 +133,7 @@ Events List
                 </div>
                 <div class="col-md-6">
                     <li class="list-group-item">
-                        <p class="text-secondary">{{ event.status }}</p>
+                        <p class="text-{{event.status_badge}}">{{ event.get_status_display}}</p>
                     </li>
                 </div>
             </div>
@@ -180,7 +180,7 @@ Events List
                 <p>No organizers have been assigned to this event yet.</p>
                 {% endif %}
                 
-                <a href="{% url 'event_add_organizer' event.pk %}" class="btn btn-primary {% if event.organizers.count >= event.max_organizers %}disabled{% endif %}">
+                <a href="{% url 'event_add_organizer' event.pk %}" class="btn btn-primary {% if event.organizers.count >= event.max_organizers or event.status == 'upcoming' %}disabled{% endif %}">
                 Add Organizer
                 </a>
             </div>
