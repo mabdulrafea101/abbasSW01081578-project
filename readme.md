@@ -1,10 +1,4 @@
-1. You've created an `event_view_accessed` signal in [event/signals.py](file:///Users/mabdulrafea/Projects/hareem%20tasks/abbas_fyp/project/web/event/signals.py) that triggers status updates
-2. The signal is connected to a handler that updates all event statuses
-3. You're using `refresh_event_statuses()` which emits this signal in your views
-4. You've also set up the `EventStatusUpdateMiddleware` that sends this signal when event-related pages are accessed
-5. There's also an automatic update via the `post_save` signal on the Event model
 
-Here's the revised README.md with the update_event_statuses command removed:
 
 # Event Management & Review System
 
