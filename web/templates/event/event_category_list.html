@@ -39,8 +39,8 @@ Events List
                             <td>{{ category.description|truncatechars:30 }}</td>
                             <td>
                                 <p>
-                                    <a href="{% url 'event_category_update' category.pk %}" class="btn btn-primary">Edit</a>
-                                    <a href="{% url 'event_category_delete' category.pk %}" class="btn btn-danger">Delete</a>
+                                    <a href="{% url 'event_category_update' category.pk %}" class="btn btn-primary"><i class='bx bx-edit-alt' ></i></a>
+                                    <a href="{% url 'event_category_delete' category.pk %}" class="btn btn-danger"><i class='bx bxs-folder-minus'></i></a>
                                 </p>
                             </td>
                         </tr>

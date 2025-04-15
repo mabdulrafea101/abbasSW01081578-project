@@ -44,10 +44,35 @@ Events List
                  {% if request.user.user_type == 'manager' %}
                  <a href="{% url 'event_update' event.pk %}" class="btn btn-success">Edit</a>
                  <a href="{% url 'event_delete' event.pk %}" class="btn btn-danger">Delete</a>
-                 {% else %}
-                    <a href="#" class="btn btn-primary">Participate</a>
+                 <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
+                 {% elif request.user.user_type == 'student' %}
+                 <div class="card mt-4">
+                     <div class="card-header">
+                         <h4>Event Participation</h4>
+                     </div>
+                     <div class="card-body">
+                         {% if event.max_participants %}
+                             <p>Participants: {{ event.participants.count }} / {{ event.max_participants }}</p>
+                         {% else %}
+                             <p>Participants: {{ event.participants.count }} (unlimited)</p>
+                         {% endif %}
+                         
+                         {% if is_participating %}
+                             <a href="{% url 'event_unparticipate' event.pk %}" class="btn btn-danger">
+                                 Withdraw Participation
+                             </a>
+                         {% else %}
+                         <a href="{% url 'event_participate' event.pk %}" 
+                             class="btn btn-primary {% if event.max_participants and event.participants.count >= event.max_participants %}disabled{% endif %} {% if event.status != 'upcoming' and event.status != 'ongoing' %}disabled{% endif %}">
+                             Participate
+                         </a>
+                      
+                         {% endif %}
+                         <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
+                     </div>
+                 </div>
                  {% endif %}
-                <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
+                
             </div>
         </div>
     </div>
@@ -171,34 +196,6 @@ Events List
     </div>
 </div>
 
-<div class="row">
-    {% if request.user.user_type == 'student' %}
-    <div class="card mt-4">
-        <div class="card-header">
-            <h4>Event Participation</h4>
-        </div>
-        <div class="card-body">
-            {% if event.max_participants %}
-                <p>Participants: {{ event.participants.count }} / {{ event.max_participants }}</p>
-            {% else %}
-                <p>Participants: {{ event.participants.count }} (unlimited)</p>
-            {% endif %}
-            
-            {% if is_participating %}
-                <a href="{% url 'event_unparticipate' event.pk %}" class="btn btn-danger">
-                    Withdraw Participation
-                </a>
-            {% else %}
-            <a href="{% url 'event_participate' event.pk %}" 
-                class="btn btn-primary {% if event.max_participants and event.participants.count >= event.max_participants %}disabled{% endif %} {% if event.status != 'upcoming' and event.status != 'ongoing' %}disabled{% endif %}">
-                Participate
-            </a>
-         
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-</div>
 
 {% endblock main_content %}
 {% block page_JS %}

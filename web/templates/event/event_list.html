@@ -34,6 +34,7 @@ Events List
                             <th>Description</th>
                             <th>Start Date</th>
                             <th>End Date</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -45,11 +46,12 @@ Events List
                             <td>{{event.description|truncatechars:30}}</td>
                             <td>{{ event.start_date_time.date }}</td>
                             <td>{{ event.end_date_time.date }}</td>
-                            {% if request.user.user_type == manager %}
+                            <td><span class="badge bg-label-{{ event.status_badge }}">{{ event.get_status_display }}</span></td>
+                            {% if request.user.user_type == 'manager' %}
                             <td>
                                 <p>
-                                    <a href="{% url 'event_update' event.pk %}" class="btn btn-primary">Edit</a>
-                                    <a href="{% url 'event_delete' event.pk %}" class="btn btn-danger">Delete</a>
+                                    <a href="{% url 'event_update' event.pk %}" class="btn btn-primary"><i class='bx bx-edit-alt'></i></a>
+                                    <a href="{% url 'event_delete' event.pk %}" class="btn btn-outline-danger"><i class='bx bxs-folder-minus'></i></a>
                                 </p>
                             </td>
                             {% else %}
@@ -74,6 +76,7 @@ Events List
                             <th>Description</th>
                             <th>Start Date</th>
                             <th>End Date</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </tfoot>

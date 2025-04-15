@@ -44,6 +44,17 @@ class Event(models.Model):
     def __str__(self):
         return self.title
     
+    @property
+    def status_badge(self):
+        """Return the appropriate badge color based on status"""
+        badges = {
+            'upcoming': 'info',
+            'ongoing': 'primary',
+            'completed': 'success',
+            'canceled': 'danger'
+        }
+        return badges.get(self.status, 'secondary')
+    
     def update_status(self):
         """Update the event status based on start and end dates"""
         now = timezone.now()
@@ -100,13 +111,4 @@ class EventParticipant(models.Model):
         return f"{self.user.username} - {self.event.title}"
 
 
-@property
-def status_badge(self):
-    """Return the appropriate badge color based on status"""
-    badges = {
-        'upcoming': 'info',
-        'ongoing': 'primary',
-        'completed': 'success',
-        'canceled': 'danger'
-    }
-    return badges.get(self.status, 'secondary')
+

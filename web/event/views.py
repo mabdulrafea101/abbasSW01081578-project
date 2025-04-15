@@ -14,11 +14,10 @@ from django.core.management import call_command
 from .signals import event_view_accessed
 
 
-
-
+# Replace the refresh_event_statuses function with:
 def refresh_event_statuses():
-    """Run the event status update command and return the count of updated events"""
-    return call_command('update_event_statuses')
+    """Emit signal to update event statuses and return count of updated events"""
+    return event_view_accessed.send(sender=EventListView)[0][1]
 
 
 # EventCategory CRUD Views
@@ -59,6 +58,7 @@ class EventListView(LoginRequiredMixin, ListView):
     model = Event
     template_name = 'event/event_list.html'
     context_object_name = 'events'
+    ordering = ['-start_date_time']
 
     def get(self, request, *args, **kwargs):
         # Send signal to update event statuses
@@ -103,6 +103,8 @@ class EventCreateView(ManagerRequiredMixin, CreateView):
     form_class = EventForm
     template_name = 'event/event_form.html'
     success_url = reverse_lazy('event_list')
+
+
 
 
 class EventUpdateView(ManagerRequiredMixin, UpdateView):
@@ -182,6 +184,11 @@ class ParticipateEventView(LoginRequiredMixin, UserPassesTestMixin, View):
         
     def get(self, request, pk):
         event = get_object_or_404(Event, pk=pk)
+
+         # Check if the event's status allows participation
+        if event.status not in ['upcoming']:
+            messages.error(request, f"You cannot participate in an event with status: {event.get_status_display()}")
+            return redirect('event_detail', pk=event.pk)
         
         # Check if the event is already full
         if event.max_participants and event.participants.count() >= event.max_participants:
