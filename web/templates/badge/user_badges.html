@@ -27,7 +27,7 @@
                             <span style="font-size: 3rem;">{{ badge.badge_type.icon }}</span>
                           </div>
                           <h5 class="card-title">{{ badge.badge_type.name }}</h5>
-                          <div class="badge bg-label-primary">Level {{ badge.badge_type.level }}</div>
+                          <div class="badge bg-label-{{badge.badge_level_color}}">Level {{ badge.badge_type.level }}</div>
                           <p class="card-text mt-3">{{ badge.badge_type.description }}</p>
                           <div class="text-muted small">Earned on {{ badge.earned_at|date:"F d, Y" }}</div>
                         </div>
@@ -66,7 +66,7 @@
                             <span style="font-size: 3rem; opacity: 0.5;">{{ progress.badge_type.icon }}</span>
                           </div>
                           <h5 class="card-title text-muted">{{ progress.badge_type.name }}</h5>
-                          <div class="badge bg-label-secondary">Level {{ progress.badge_type.level }}</div>
+                          <div class="badge bg-label-{{progress.badge_level_color}}">Level {{ progress.badge_type.level }}</div>
                           <p class="card-text mt-3">{{ progress.badge_type.description }}</p>
                           <div class="progress mt-3">
                             <div class="progress-bar" role="progressbar" 

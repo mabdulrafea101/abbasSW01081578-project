@@ -180,7 +180,7 @@ Events List
                 <p>No organizers have been assigned to this event yet.</p>
                 {% endif %}
                 
-                <a href="{% url 'event_add_organizer' event.pk %}" class="btn btn-primary {% if event.organizers.count >= event.max_organizers or event.status == 'upcoming' %}disabled{% endif %}">
+                <a href="{% url 'event_add_organizer' event.pk %}" class="btn btn-primary {% if event.organizers.count >= event.max_organizers or event.status == 'ongoing' or event.status == 'completed' %}disabled{% endif %}">
                 Add Organizer
                 </a>
             </div>

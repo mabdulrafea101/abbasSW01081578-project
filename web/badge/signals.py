@@ -1,24 +1,33 @@
 # In badge/signals.py
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from event.models import EventOrganizer, EventParticipant
+from event.models import EventParticipant, EventOrganizer
 from review.models import OrganizerRating
-from .services import update_organizer_badges, update_participant_badges, update_helper_badges
-
-@receiver(post_save, sender=EventOrganizer)
-def handle_event_organizer_created(sender, instance, created, **kwargs):
-    """Update organizer badges when a user is assigned as an event organizer"""
-    if created:
-        update_organizer_badges(instance.user)
+from .services import update_participant_badge_progress, update_helper_badge_progress, update_organizer_badge_progress
 
 @receiver(post_save, sender=EventParticipant)
-def handle_event_participant_created(sender, instance, created, **kwargs):
-    """Update participant badges when a user participates in an event"""
-    if created:
-        update_participant_badges(instance.user)
+@receiver(post_delete, sender=EventParticipant)
+def update_badges_on_participation_change(sender, instance, **kwargs):
+    """
+    Update badge progress when a user joins or leaves an event
+    """
+    user = instance.user
+    update_participant_badge_progress(user)
+
+@receiver(post_save, sender=EventOrganizer)
+@receiver(post_delete, sender=EventOrganizer)
+def update_badges_on_organizer_change(sender, instance, **kwargs):
+    """
+    Update badge progress when a user becomes or stops being an event organizer
+    """
+    user = instance.user
+    update_organizer_badge_progress(user)
 
 @receiver(post_save, sender=OrganizerRating)
-def handle_organizer_rating_created(sender, instance, created, **kwargs):
-    """Update helper badges when a user rates an organizer"""
-    if created:
-        update_helper_badges(instance.participant)
+@receiver(post_delete, sender=OrganizerRating)
+def update_badges_on_rating_change(sender, instance, **kwargs):
+    """
+    Update badge progress when a user rates or removes a rating for an organizer
+    """
+    participant = instance.participant
+    update_helper_badge_progress(participant)
