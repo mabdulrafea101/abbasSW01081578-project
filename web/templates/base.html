@@ -57,6 +57,42 @@
 
     <!-- endbuild -->
 
+    <!-- Add this to your base template's head or include separately -->
+<style>
+  .star-rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+  
+  .star-rating input {
+    display: none;
+  }
+  
+  .star-rating label {
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px;
+    filter: grayscale(100%);
+  }
+  
+  .star-rating input:checked ~ label {
+    filter: grayscale(0);
+    filter: brightness(1.5);
+  }
+  
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    filter: grayscale(0);
+  }
+</style>
+
+
+
     <!-- Page CSS -->
     {% block page_CSS %}{% endblock page_CSS %}
     <!-- Helpers -->
@@ -665,6 +701,27 @@
       <div class="layout-overlay layout-menu-toggle"></div>
     </div>
     <!-- / Layout wrapper -->
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Optional JavaScript to enhance the star rating UI
+        const starRatings = document.querySelectorAll('.star-rating');
+        
+        starRatings.forEach(function(rating) {
+          const labels = rating.querySelectorAll('label');
+          const input = rating.querySelector('input:checked');
+          
+          if (input) {
+            const value = parseInt(input.value);
+            labels.forEach(function(label, index) {
+              if (labels.length - index <= value) {
+                label.classList.add('selected');
+              }
+            });
+          }
+        });
+      });
+    </script>
 
     <!-- Core JS -->
 

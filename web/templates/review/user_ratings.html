@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block main_content %}
+<div class="container">
+  <h2>My Ratings</h2>
+  
+  <div class="card">
+    <div class="card-header">
+      <h4>Ratings You've Given</h4>
+    </div>
+    <div class="card-body">
+      {% if ratings %}
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Organizer</th>
+                <th>Rating</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rating in ratings %}
+                <tr>
+                  <td>
+                    <a href="{% url 'event_detail' rating.event.pk %}">
+                      {{ rating.event.title }}
+                    </a>
+                  </td>
+                  <td>{{ rating.organizer.user.username }}</td>
+                  <td>
+                    <span class="badge bg-primary">
+                      <i class="bx bxs-star text-warning"></i> {{ rating.rating }}
+                    </span>
+                  </td>
+                  <td>{{ rating.created_at|date:"M d, Y" }}</td>
+                  <td>
+                    <a href="{% url 'event_rating' rating.event.pk %}" class="btn btn-sm btn-outline-primary">
+                      <i class="bx bx-edit"></i> Edit
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="alert alert-info">
+          <p>You haven't rated any organizers yet.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock main_content %}

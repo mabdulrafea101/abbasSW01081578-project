@@ -14,7 +14,10 @@ Events List
             <div class="card-body">
                 <h4 class="card-title">{{ event.title }}</h4>
                 <h5 class="card-subtitle">{{ event.category }}</h5>
+                {% if event.images %}
                 <img class="img-fluid d-flex mx-auto my-6 rounded" src="{{ event.images.url }}" alt="Card image cap">
+                {% else %}
+                 {% endif %}
                 <h6 class="card-subtitle">Description: </h6>
                 <p class="card-text">{{ event.description }}.</p>
                 <div class="row">
@@ -58,7 +61,8 @@ Events List
                          {% endif %}
                          
                          {% if is_participating %}
-                             <a href="{% url 'event_unparticipate' event.pk %}" class="btn btn-danger">
+                             <a href="{% url 'event_unparticipate' event.pk %}" class="btn btn-danger {% if event.status != 'upcoming' and event.status != 'ongoing' %}disabled{% endif %}">
+                             <i class="bx bx-x"></i>
                                  Withdraw Participation
                              </a>
                          {% else %}
@@ -68,6 +72,14 @@ Events List
                          </a>
                       
                          {% endif %}
+                            {% if event.status == 'completed' %}
+                                <!-- Add this in your event_detail.html template -->
+                                
+                                <a href="{% url 'event_rating' event.pk %}" class="btn btn-info">
+                                <i class="bx bxs-star"></i> Rate Organizers
+                                </a>
+                                
+                            {% endif %}
                          <a href="{% url 'event_list' %}" class="btn btn-secondary">Back to Events</a>
                      </div>
                  </div>

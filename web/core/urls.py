@@ -37,6 +37,7 @@ urlpatterns = [
     path('event/', include('event.urls')),
     path('leaderboard/', include('leaderboard.urls')),
     path('notification/', include('notification.urls')),
+    path('review/', include('review.urls')),
     path('admin/update-event-statuses/', update_event_statuses, name='update_event_statuses'),
 ]
 
