@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_title %}
+My Profile
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="row">
+    <div class="col-md-12">
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+      <div class="card mb-4">
+        <h5 class="card-header">Profile Details</h5>
+        <div class="card-body">
+          <div class="d-flex align-items-start align-items-sm-center gap-4">
+            {% if profile.profile_picture %}
+            <img
+              src="{{ profile.profile_picture.url }}"
+              alt="user-avatar"
+              class="d-block rounded"
+              height="100"
+              width="100"
+              id="uploadedAvatar"
+            />
+            {% else %}
+            <img
+              src="{% static 'img/avatars/default.png' %}"
+              alt="user-avatar"
+              class="d-block rounded"
+              height="100"
+              width="100"
+              id="uploadedAvatar"
+            />
+            {% endif %}
+            <div class="button-wrapper">
+              <a href="{% url 'profile_update' %}" class="btn btn-primary me-2 mb-4">
+                <i class="bx bx-edit-alt me-1"></i> Edit Profile
+              </a>
+            </div>
+          </div>
+        </div>
+        <hr class="my-0" />
+        <div class="card-body">
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <h5 class="form-label">Username</h5>
+              <p>{{ user.username }}</p>
+            </div>
+            <div class="mb-3 col-md-6">
+              <h5 class="form-label">Email</h5>
+              <p>{{ user.email }}</p>
+            </div>
+            <div class="mb-3 col-md-6">
+              <h5 class="form-label">First Name</h5>
+              <p>{{ user.first_name }}</p>
+            </div>
+            <div class="mb-3 col-md-6">
+              <h5 class="form-label">Last Name</h5>
+              <p>{{ user.last_name }}</p>
+            </div>
+            <div class="mb-3 col-md-6">
+              <h5 class="form-label">User Type</h5>
+              <p>{{ user.get_user_type_display }}</p>
+            </div>
+            <div class="mb-3 col-md-6">
+              <h5 class="form-label">Phone Number</h5>
+              <p>{{ user.phone|default:"Not provided" }}</p>
+            </div>
+            {% if user.user_type == 'student' and user.student_id %}
+            <div class="mb-3 col-md-6">
+              <h5 class="form-label">Student ID</h5>
+              <p>{{ user.student_id }}</p>
+            </div>
+            {% endif %}
+          </div>
+          <div class="row">
+            <div class="mb-3">
+              <h5 class="form-label">Bio</h5>
+              <p>{{ profile.bio|default:"No bio provided yet." }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats Card -->
+      <div class="card mb-4">
+        <h5 class="card-header">Statistics</h5>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <h2 class="text-primary">{{ profile.total_points }}</h2>
+              <p>Total Points</p>
+            </div>
+            <div class="col-md-4 text-center">
+              <h2 class="text-success">{{ profile.current_level }}</h2>
+              <p>Current Level</p>
+            </div>
+            <!-- Add more stats as needed -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}

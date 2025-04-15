@@ -19,6 +19,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from django.http import HttpResponse
+from django.core.management import call_command
+
+
+def update_event_statuses(request):
+    """View to manually trigger event status updates"""
+    count = call_command('update_event_statuses')
+    return HttpResponse(f"Updated {count} event statuses")
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +37,7 @@ urlpatterns = [
     path('event/', include('event.urls')),
     path('leaderboard/', include('leaderboard.urls')),
     path('notification/', include('notification.urls')),
+    path('admin/update-event-statuses/', update_event_statuses, name='update_event_statuses'),
 ]
 
 

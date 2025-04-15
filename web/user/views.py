@@ -79,7 +79,7 @@ class ConfirmUserView(ManagerRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CustomUser
     fields = ['is_account_confirmed']
     template_name = 'user/confirm_user.html'
-    success_url = reverse_lazy('pending-users')
+    success_url = reverse_lazy('pending_users')
 
     def test_func(self):
         # Restrict access to manager only
@@ -96,13 +96,9 @@ class ConfirmUserView(ManagerRequiredMixin, UserPassesTestMixin, UpdateView):
         return response
 
     def get_queryset(self):
-        user = self.request.user
-        if user.user_type == 'manager':
-            return {}
-        elif user.user_type == 'teacher':
-            return {}
-        else:  # student
-            return {}
+        # Return a proper queryset instead of a dictionary
+        return CustomUser.objects.filter(is_account_confirmed=False)
+
 
 
 class BaseDashboardView(LoginRequiredMixin, ListView):
@@ -138,7 +134,15 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'profile'
 
     def get_object(self, queryset=None):
+        # Always return the logged-in user's profile
         return self.request.user.profile
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add additional context data if needed
+        context['user'] = self.request.user
+        # You could add stats, badges, events, etc.
+        return context
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
@@ -148,4 +152,9 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('profile')
 
     def get_object(self, queryset=None):
+        # Always update the logged-in user's profile
         return self.request.user.profile
+        
+    def form_valid(self, form):
+        messages.success(self.request, "Your profile has been updated successfully.")
+        return super().form_valid(form)

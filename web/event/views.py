@@ -1,11 +1,24 @@
 from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView
+from django.views.generic.edit import FormView
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views import View
 
 from user.mixins import ManagerRequiredMixin
-from .models import Event, EventCategory, Application
-from .forms import EventForm, EventCategoryForm, ApplicationForm
+from .models import Event, EventCategory, EventOrganizer, EventParticipant
+from .forms import AddOrganizerForm, EventForm, EventCategoryForm
 from django.contrib import messages
+
+from django.core.management import call_command
+from .signals import event_view_accessed
+
+
+
+
+def refresh_event_statuses():
+    """Run the event status update command and return the count of updated events"""
+    return call_command('update_event_statuses')
 
 
 # EventCategory CRUD Views
@@ -41,15 +54,48 @@ class EventCategoryDeleteView(ManagerRequiredMixin, DeleteView):
 
 
 # Event CRUD Views
+# In event/views.py
 class EventListView(LoginRequiredMixin, ListView):
     model = Event
     template_name = 'event/event_list.html'
     context_object_name = 'events'
 
+    def get(self, request, *args, **kwargs):
+        # Send signal to update event statuses
+        event_view_accessed.send(sender=self.__class__)
+        # Continue with normal processing
+        return super().get(request, *args, **kwargs)
+     
+    def get_queryset(self):
+        # Run the command to update all event statuses
+        refresh_event_statuses()
+        
+        # Get the events
+        return super().get_queryset()
 
+
+# In event/views.py
 class EventDetailView(LoginRequiredMixin, DetailView):
     model = Event
     template_name = 'event/event_detail.html'
+
+    def get_object(self, queryset=None):
+        # Run the command to update all event statuses
+        refresh_event_statuses()
+        
+        # Get the event object
+        event = super().get_object(queryset)
+        return event
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add participating flag for students
+        if self.request.user.user_type == 'student':
+            context['is_participating'] = EventParticipant.objects.filter(
+                event=self.object, 
+                user=self.request.user
+            ).exists()
+        return context
 
 
 class EventCreateView(ManagerRequiredMixin, CreateView):
@@ -72,32 +118,140 @@ class EventDeleteView(ManagerRequiredMixin, DeleteView):
     success_url = reverse_lazy('event_list')
 
 
-class ApplicationCreateView(LoginRequiredMixin, CreateView):
-    model = Application
-    form_class = ApplicationForm
-    template_name = 'event/organizer_application_form.html'
+# Add Organizer View
+
+class AddEventOrganizerView(ManagerRequiredMixin, FormView):
+    template_name = 'event/add_organizer.html'
+    form_class = AddOrganizerForm
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        self.event = get_object_or_404(Event, pk=self.kwargs['pk'])
+        kwargs['event'] = self.event
+        return kwargs
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['event'] = self.event
+        context['current_organizers'] = self.event.organizers.all()
+        context['organizer_count'] = self.event.organizers.count()
+        context['max_organizers'] = self.event.max_organizers
+        return context
+    
+    def form_valid(self, form):
+        event = self.event
+        user = form.cleaned_data['organizer']
+        
+        # Create the organizer relationship
+        EventOrganizer.objects.create(event=event, user=user)
+        
+        messages.success(self.request, f"{user.username} has been added as an organizer for {event.title}.")
+        return redirect('event_detail', pk=event.pk)
+
+
+class EventOrganizerDeleteView(ManagerRequiredMixin, DeleteView):
+    model = EventOrganizer
+    template_name = 'event/event_organizer_confirm_delete.html'
     success_url = reverse_lazy('event_list')
+    context_object_name = 'event_organizer'
 
+    # Override the get_object method to get the EventOrganizer instance
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        self.event = obj.event
+        return obj
+    
+    # Override the get_context_data method to pass the event to the template
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['event'] = self.event
+        return context
+    
+    # Override the form_valid method to show a success message
     def form_valid(self, form):
-        messages.success(self.request, 'Application submitted successfully!')
+        messages.success(self.request, f"{self.object.user.username} has been removed as an organizer for {self.event.title}.")
         return super().form_valid(form)
+    
+
+class ParticipateEventView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """View to allow students to participate in an event"""
+    
+    def test_func(self):
+        # Only students can participate in events
+        return self.request.user.user_type == 'student'
+        
+    def get(self, request, pk):
+        event = get_object_or_404(Event, pk=pk)
+        
+        # Check if the event is already full
+        if event.max_participants and event.participants.count() >= event.max_participants:
+            messages.error(request, "This event has reached its maximum number of participants.")
+            return redirect('event_detail', pk=event.pk)
+            
+        # Check if the event's status allows participation
+        if event.status not in ['upcoming', 'ongoing']:
+            messages.error(request, f"You cannot participate in an event with status: {event.get_status_display()}")
+            return redirect('event_detail', pk=event.pk)
+            
+        # Check if the user is already participating
+        if EventParticipant.objects.filter(event=event, user=request.user).exists():
+            messages.info(request, f"You are already participating in {event.title}.")
+            return redirect('event_detail', pk=event.pk)
+        
+        if event.status not in ['upcoming', 'ongoing']:
+            messages.error(request, f"You cannot participate in an event with status: {event.get_status_display()}")
+            return redirect('event_detail', pk=event.pk)
+        
+        # Check if the user is an organizer of this event
+        if EventOrganizer.objects.filter(event=event, user=request.user).exists():
+            messages.error(request, "As an organizer of this event, you cannot participate as an attendee.")
+            return redirect('event_detail', pk=event.pk)
+        
+
+        # Create the participation
+        EventParticipant.objects.create(event=event, user=request.user)
+        messages.success(request, f"You are now participating in {event.title}.")
+        
+        return redirect('event_detail', pk=event.pk)
 
 
-class ApplicationListView(LoginRequiredMixin, ListView):
-    model = Application
-    template_name = 'event/organizer_application_list.html'
-    context_object_name = 'applications'
+class UnparticipateEventView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """View to allow students to withdraw participation from an event"""
+    
+    def test_func(self):
+        # Only students can withdraw from events
+        return self.request.user.user_type == 'student'
+        
+    def get(self, request, pk):
+        event = get_object_or_404(Event, pk=pk)
+        
+        # Check if the event's status allows withdrawal
+        if event.status == 'completed':
+            messages.error(request, "You cannot withdraw from a completed event.")
+            return redirect('event_detail', pk=event.pk)
+            
+        # Find and delete the participation entry
+        participation = get_object_or_404(EventParticipant, event=event, user=request.user)
+        participation.delete()
+        
+        messages.success(request, f"You are no longer participating in {event.title}.")
+        return redirect('event_detail', pk=event.pk)
 
+
+# In event/views.py
+class ParticipatingEventsListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """View to display all events a student is participating in"""
+    model = Event
+    template_name = 'event/participating_events.html'
+    context_object_name = 'events'
+    
+    def test_func(self):
+        return self.request.user.user_type == 'student'
+    
     def get_queryset(self):
-        return Application.objects.filter(event__organizers=self.request.user)
+        # Run the status update command
+        refresh_event_statuses()
+        
+        # Get the participating events
+        return Event.objects.filter(participants__user=self.request.user)
 
-
-class ApplicationUpdateView(LoginRequiredMixin, UpdateView):
-    model = Application
-    form_class = ApplicationForm
-    template_name = 'event/organizer_application_form.html'
-    success_url = reverse_lazy('organizer_application_list')
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Application status updated successfully!')
-        return super().form_valid(form)

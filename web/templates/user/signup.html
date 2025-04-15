@@ -108,7 +108,16 @@
 
               <form action="{% url 'signup' %}" class="user" method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ form.email.label_tag }}  {{ form.email }}
+                {{ form.password1.label_tag }}  {{ form.password1 }}
+                {{ form.password2.label_tag }}  {{ form.password2 }}
+                {{ form.first_name.label_tag }}  {{ form.first_name }}
+                {{ form.last_name.label_tag }}  {{ form.last_name }}
+                {{ form.user_type.label_tag }}  {{ form.user_type }}
+                <div id="student_id_container">
+                  {{ form.student_id.label_tag }}  {{ form.student_id }}
+                </div>
+
                 <div class="my-7">
                   <div class="form-check mb-0">
                     <input class="form-check-input" type="checkbox" id="terms-conditions" name="terms" />
@@ -144,6 +153,35 @@
         >Upgrade to Pro</a
       >
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const userTypeSelect = document.getElementById('{{ form.user_type.id_for_label }}');
+        const studentIdContainer = document.getElementById('student_id_container');
+        const studentIdInput = document.getElementById('{{ form.student_id.id_for_label }}');
+        
+        // Function to toggle student ID field visibility and state
+        function toggleStudentIdField() {
+          if (userTypeSelect.value === 'student') {
+            studentIdContainer.style.display = 'block';
+            studentIdInput.disabled = false;
+            studentIdInput.required = true;
+          } else {
+            studentIdContainer.style.display = 'none';
+            studentIdInput.disabled = true;
+            studentIdInput.required = false;
+            studentIdInput.value = ''; // Optional: clear the value when disabled
+          }
+        }
+        
+        // Initial state setup
+        toggleStudentIdField();
+        
+        // Add event listener for changes to the user_type field
+        userTypeSelect.addEventListener('change', toggleStudentIdField);
+      });
+    </script>
+    
 
     <!-- Core JS -->
 

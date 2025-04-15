@@ -54,19 +54,8 @@ Events List
     <div class="card col-md-6 col-lg-6">
         <ul class="list-group list-group-flush">
           
-            <div class="row mt-2">
-                <div class="col-md-6">
-                    <li class="list-group-item">
-                        <p>Organizers Type</p>
-                    </li>
-                </div>
-                <div class="col-md-6">
-                    <li class="list-group-item">
-                        <p class="text-primary">{{  event.organizers_type}}</p></li>
-                </div>
-            </div>
 
-             <div class="row">
+             <div class="row mt-2">
                  <div class="col-md-6">
                       <li class="list-group-item">
                         <p>Event Type</p>
@@ -75,17 +64,6 @@ Events List
                   <div class="col-md-6">
                        <li class="list-group-item">
                         <p class="text-primary">{{ event.event_type }}</p></li>
-                  </div>
-             </div>
-
-             <div class="row">
-                 <div class="col-md-6">
-                      <li class="list-group-item">
-                          <p>Event For</p></li>
-                  </div>
-                  <div class="col-md-6">
-                        <li class="list-group-item">
-                            <p class="text-primary">{{ event.event_for }}</p></li>
                   </div>
              </div>
 
@@ -100,7 +78,7 @@ Events List
                  </div>
             </div>
 
-             <div class="row">
+            <div class="row">
                   <div class="col-md-6">
                        <li class="list-group-item">
                             <p>Start Time</p></li>
@@ -109,7 +87,19 @@ Events List
                          <li class="list-group-item">
                              <p class="text-primary">{{ event.start_date_time.time }}</p></li>
                     </div>
-             </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                     <li class="list-group-item">
+                          <p>Event Status</p></li>
+                </div>
+                <div class="col-md-6">
+                    <li class="list-group-item">
+                        <p class="text-secondary">{{ event.status }}</p>
+                    </li>
+                </div>
+            </div>
 
              <div class="row">
                     <div class="col-md-6">
@@ -133,8 +123,83 @@ Events List
                     </div>
               </div>
         </ul>
-      </div>
+
+        {% if request.user.user_type == 'manager' %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4>Event Organizers ({{ event.organizers.count }} / {{ event.max_organizers }})</h4>
+            </div>
+            <div class="card-body">
+                {% if event.organizers.all %}
+                <ul class="list-group mb-3">
+                    {% for organizer in event.organizers.all %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ organizer.user.first_name }} {{ organizer.user.last_name }} ({{ organizer.user.email }})
+                        <span class="badge bg-primary rounded-pill">{{ organizer.user.get_user_type_display }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No organizers have been assigned to this event yet.</p>
+                {% endif %}
+                
+                <a href="{% url 'event_add_organizer' event.pk %}" class="btn btn-primary {% if event.organizers.count >= event.max_organizers %}disabled{% endif %}">
+                Add Organizer
+                </a>
+            </div>
+        </div>
+        {% elif request.user.user_type == 'student' %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4>Event Organizers ({{ event.organizers.count }} / {{ event.max_organizers }})</h4>
+            </div>
+             <div class="card-body">
+                 {% if event.organizers.all %}
+                  <ul class="list-group">
+                      {% for organizer in event.organizers.all %}
+                       <li class="list-group-item">
+                           {{ organizer.user.first_name }} {{ organizer.user.last_name }} ({{ organizer.user.email }})
+                           <span class="badge bg-primary rounded-pill">{{ organizer.user.get_user_type_display }}</span>
+                       </li>
+                      {% endfor %}
+                  </ul>
+                 {% else %}
+                  <p>No organizers have been assigned to this event yet.</p>
+                 {% endif %}
+        </div>
+        {% endif %}
+    </div>
 </div>
+
+<div class="row">
+    {% if request.user.user_type == 'student' %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Event Participation</h4>
+        </div>
+        <div class="card-body">
+            {% if event.max_participants %}
+                <p>Participants: {{ event.participants.count }} / {{ event.max_participants }}</p>
+            {% else %}
+                <p>Participants: {{ event.participants.count }} (unlimited)</p>
+            {% endif %}
+            
+            {% if is_participating %}
+                <a href="{% url 'event_unparticipate' event.pk %}" class="btn btn-danger">
+                    Withdraw Participation
+                </a>
+            {% else %}
+            <a href="{% url 'event_participate' event.pk %}" 
+                class="btn btn-primary {% if event.max_participants and event.participants.count >= event.max_participants %}disabled{% endif %} {% if event.status != 'upcoming' and event.status != 'ongoing' %}disabled{% endif %}">
+                Participate
+            </a>
+         
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
 {% endblock main_content %}
 {% block page_JS %}
 

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}My Participating Events{% endblock %}
+
+{% block main_content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">Events /</span> My Participating Events
+    </h4>
+
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title mb-0">Events I'm Participating In</h5>
+        </div>
+        <div class="card-body">
+            {% if events %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Category</th>
+                            <th>Start - End</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.title }}</td>
+                            <td>{{ event.category.name }}</td>
+                            {% if event.start_date_time.date == event.end_date_time.date %}
+                            <td>{{ event.start_date_time|date:"F j, Y" }}</td>
+                            {% else %}
+                            <td>{{ event.start_date_time|date:"F j, Y" }} to {{ event.end_date_time|date:"F j, Y" }}</td>
+                            {% endif %}
+                            <td>{{ event.start_date_time|time:"h:i A" }} to {{ event.end_date_time|time:"h:i A" }}</td>
+                            <td><span class="badge bg-label-{{ event.status_badge }}">{{ event.get_status_display }}</span></td>
+                            <td>
+                                <a href="{% url 'event_detail' event.pk %}" class="btn btn-sm btn-primary">View</a>
+                                {% if event.status != 'completed' %}
+                                <a href="{% url 'event_unparticipate' event.pk %}" class="btn btn-sm btn-danger">Withdraw</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center p-4">
+                <p>You are not participating in any events yet.</p>
+                <a href="{% url 'event_list' %}" class="btn btn-primary">Browse Events</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock main_content %}

@@ -140,7 +140,7 @@
 
           <ul class="menu-inner py-1">
             <!-- Dashboards -->
-            <li class="menu-item">
+            <li class="menu-item {% if 'dashboard' in request.path %}active{% endif %}">
               {% if request.user.user_type == 'manager' %}
               <a
                 href="{% url 'manager_dashboard' %}"
@@ -157,131 +157,63 @@
                 class="menu-link"
               >
               {% endif %}
-              
-                <i class="menu-icon tf-icons bx bxs-dashboard"></i>
-                <div class="text-truncate" data-i18n="Email">Dashboar</div>
-                <div
-                  class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
-                >
-                  5
-                </div>
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
               </a>
             </li>
 
+
             <!-- Events -->
-            <li class="menu-item active open">
+            <li class="menu-item {% if 'event' in request.path %}open{% endif %}">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-layout"></i>
                 <div class="text-truncate" data-i18n="Events">Events</div>
               </a>
 
               <ul class="menu-sub">
-                <li class="menu-item">
+                <li class="menu-item {% if request.path == '/event/' %}active{% endif %}">
                   <a href="{% url 'event_list' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="All Events">
                       All Events
                     </div>
                   </a>
                 </li>
+                
                 {% if request.user.user_type == 'student' %}
-                <li class="menu-item active">
-                  <a href="layouts-without-navbar.html" class="menu-link">
+                <li class="menu-item {% if 'participating' in request.path %}active{% endif %}">
+                  <a href="{% url 'participating_events' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Participating Events">
-                      Participating Events
+                      Participating
                     </div>
-                    <div
-                      class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
-                    >
+                    <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">
                       +2PTS
                     </div>
                   </a>
                 </li>
-                <li class="menu-item">
-                  <a href="layouts-fluid.html" class="menu-link">
-                    <!-- events which has organizer request open + show table of previous organized events-->
-                    <div class="text-truncate" data-i18n="Organize Events">
-                      Organize Events
-                    </div>
-                    <div
-                      class="badge rounded-pill bg-label-danger text-uppercase fs-tiny ms-auto"
-                    >
-                      +5pts
-                    </div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="layouts-container.html" class="menu-link">
-                    <!-- with each event card there should be option to rate the event-->
-                    <div class="text-truncate" data-i18n="Attended Events">
-                      Attended Events
-                    </div>
-                    <div
-                      class="badge rounded-pill bg-label-info text-uppercase fs-tiny ms-auto"
-                    >
-                      +1pts
-                    </div>
-                  </a>
-                </li>
-                {% elif request.user.user_type == 'teacher' %}
-                <li class="menu-item active">
-                  <a href="layouts-without-navbar.html" class="menu-link">
-                    <div class="text-truncate" data-i18n="Participating Events">
-                      Participating Events
-                    </div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="layouts-fluid.html" class="menu-link">
-                    <!-- events which has organizer request open + show table of previous organized events-->
-                    <div class="text-truncate" data-i18n="Organize Events">
-                      Organize Events
-                    </div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="layouts-container.html" class="menu-link">
-                    <!-- with each event card there should be option to rate the event-->
-                    <div class="text-truncate" data-i18n="Attended Events">
-                      Attended Events
-                    </div>
-                  </a>
-                </li>
-                {% else %}
-                <li class="menu-item active">
+                {% endif %}
+
+                
+                <!-- Manager section -->
+                {% if request.user.user_type == 'manager' %}
+                <li class="menu-item {% if '/event/create' in request.path %}active{% endif %}">
                   <a href="{% url 'event_create' %}" class="menu-link">
                     <div class="text-truncate" data-i18n="Create Events">
                       Create Event
                     </div>
                   </a>
                 </li>
-                <li class="menu-item">
-                  <a href="layouts-fluid.html" class="menu-link">
-                    <!-- events which has organizer request open + show table of previous organized events-->
-                    <div class="text-truncate" data-i18n="Organize Events">
-                      Organizers Request
-                    </div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="layouts-container.html" class="menu-link">
-                    <!-- with each event card there should be option to rate the event-->
-                    <div class="text-truncate" data-i18n="Attended Events">
-                      Done Events
-                    </div>
-                  </a>
-                </li>
-                <li class="menu-item">
+                
+                <li class="menu-item {% if '/event/categories' in request.path %}active{% endif %}">
                   <a href="{% url 'event_category_list' %}" class="menu-link">
-                    <!-- with each event card there should be option to rate the event-->
                     <div class="text-truncate" data-i18n="Categories">
                       Categories
                     </div>
                   </a>
                 </li>
                 {% endif %}
-
               </ul>
             </li>
+
 
             {% if request.user.user_type == 'student' or request.user.user_type == 'teacher' %}
             <!-- Review Events -->
@@ -443,17 +375,6 @@
                 <div class="text-truncate" data-i18n="Pending Users">Pending Users</div>
               </a>
             </li>
-            <li class="menu-item">
-              <a
-                href=""
-                class="menu-link"
-              >
-                <i class="menu-icon tf-icons bx bxs-user-check"></i>
-                <div class="text-truncate" data-i18n="Confirmed Users">
-                  Confirmed Users
-                </div>
-              </a>
-            </li>
 
             {% else %}
             <!-- User Management -->
@@ -552,14 +473,23 @@
                     href="javascript:void(0);"
                     data-bs-toggle="dropdown"
                   >
-                    <div class="avatar avatar-online">
-                      <!-- replace profile image here-->
+                  <!-- User dropdown avatar in navbar -->
+                  <div class="avatar avatar-online">
+                    {% if request.user.profile.profile_picture %}
                       <img
-                        src="{% static 'assets/img/avatars/1.png'%}"
-                        alt
+                        src="{{ request.user.profile.profile_picture.url }}"
+                        alt="{{ request.user.username }}"
                         class="w-px-40 h-auto rounded-circle"
                       />
-                    </div>
+                    {% else %}
+                      <img
+                        src="{% static 'assets/img/avatars/1.png' %}"
+                        alt="{{ request.user.username }}"
+                        class="w-px-40 h-auto rounded-circle"
+                      />
+                    {% endif %}
+                  </div>
+
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li>
@@ -567,13 +497,21 @@
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
-                              <!-- replace profile image here-->
-                              <img
-                                src="{% static 'assets/img/avatars/1.png'%}"
-                                alt
-                                class="w-px-40 h-auto rounded-circle"
-                              />
+                              {% if request.user.profile.profile_picture %}
+                                <img
+                                  src="{{ request.user.profile.profile_picture.url }}"
+                                  alt="{{ request.user.username }}"
+                                  class="w-px-40 h-auto rounded-circle"
+                                />
+                              {% else %}
+                                <img
+                                  src="{% static 'assets/img/avatars/1.png' %}"
+                                  alt="{{ request.user.username }}"
+                                  class="w-px-40 h-auto rounded-circle"
+                                />
+                              {% endif %}
                             </div>
+                            
                           </div>
                           <div class="flex-grow-1">
                             <h6 class="mb-0">
@@ -590,7 +528,7 @@
                       <div class="dropdown-divider my-1"></div>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="#">
+                      <a class="dropdown-item" href="{% url 'profile' %}">
                         <i class="icon-base bx bx-user icon-md me-3"></i
                         ><span>My Profile</span>
                       </a>
@@ -635,15 +573,28 @@
           </nav>
 
           <!-- / Navbar -->
-          <!-- Content wrapper -->
-          <div class="content-wrapper">
-            <!-- Content -->
-            <div class="container-xxl flex-grow-1 container-p-y">
-              {% block main_content %}
-              <h1>Replace Page code here...</h1>
-              {% endblock main_content %}
+        <!-- Content wrapper -->
+        <div class="content-wrapper">
+          <!-- Content -->
+          <div class="container-xxl flex-grow-1 container-p-y">
+            <!-- Messages section -->
+            {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+              <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              {% endfor %}
             </div>
-            <!-- / Content -->
+            {% endif %}
+            
+            {% block main_content %}
+            <h1>Replace Page code here...</h1>
+            {% endblock main_content %}
+          </div>
+          <!-- / Content -->
+
 
             <!-- Footer -->
             <footer class="content-footer footer bg-footer-theme">

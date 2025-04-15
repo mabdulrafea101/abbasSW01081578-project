@@ -110,6 +110,32 @@
 
               <form class="user" action="{% url 'login' %}" method="post">
                 {% csrf_token %}
+                
+                <!-- Add error messages display section -->
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                  <ul class="mb-0">
+                    {% for field, errors in form.errors.items %}
+                      {% for error in errors %}
+                        <li>{{ error }}</li>
+                      {% endfor %}
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endif %}
+                
+                <!-- Add Django messages framework messages -->
+                {% if messages %}
+                <div class="messages">
+                  {% for message in messages %}
+                  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                
                 {{ form.as_p }}
                 <div class="mb-8">
                   <div class="d-flex justify-content-between">
@@ -126,6 +152,7 @@
                   <button class="btn btn-primary d-grid w-100" type="submit">Login</button>
                 </div>
               </form>
+              
 
               <p class="text-center">
                 <span>New on our platform?</span>

@@ -13,6 +13,8 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)  # Ensure email is unique
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
+    student_id = models.CharField(max_length=20, blank=True, null=True)
+    
     """
     Custom User model extending Django's AbstractUser.
     """

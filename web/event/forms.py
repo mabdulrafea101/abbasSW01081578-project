@@ -1,5 +1,7 @@
 from django import forms
-from .models import Event, EventCategory, Application
+
+from user.models import CustomUser
+from .models import Event, EventCategory
 
 
 class EventCategoryForm(forms.ModelForm):
@@ -16,9 +18,9 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ['title', 'category', 'description', 'images',
-                  'start_date_time', 'end_date_time', 'max_organizers',
-                  'max_participants',
-                  'organizers_type', 'event_type', 'location', 'event_for',]
+                  'start_date_time', 'end_date_time', 'status',
+                  'max_organizers', 'max_participants',
+                  'event_type', 'location',]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
@@ -30,18 +32,36 @@ class EventForm(forms.ModelForm):
             'max_participants': forms.NumberInput(attrs={'class': 'form-control'}),
             'organizers_type': forms.Select(attrs={'class': 'form-control'}),
             'location': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_location'}),
-            'event_for': forms.Select(attrs={'class': 'form-control'}),
             'event_type': forms.Select(attrs={'class': 'form-control', 'id': 'id_event_type'}),
-        }
-
-
-class ApplicationForm(forms.ModelForm):
-    class Meta:
-        model = Application
-        fields = ['event', 'user', 'status']
-        widgets = {
-            'event': forms.Select(attrs={'class': 'form-control'}),
-            'user': forms.Select(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
         }
+
+
+class AddOrganizerForm(forms.Form):
+    organizer = forms.ModelChoiceField(
+        queryset=CustomUser.objects.filter(user_type__in=['teacher', 'student']),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    def __init__(self, event, *args, **kwargs):
+        self.event = event
+        super().__init__(*args, **kwargs)
+        
+        # Exclude users already assigned as organizers for this event
+        existing_organizers = event.organizers.values_list('user_id', flat=True)
+        self.fields['organizer'].queryset = CustomUser.objects.filter(
+            user_type__in=['teacher', 'student'],
+            is_account_confirmed=True
+        ).exclude(id__in=existing_organizers)
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        # Check if the event's organizer limit has been reached
+        current_count = self.event.organizers.count()
+        max_organizers = self.event.max_organizers
+        
+        if current_count >= max_organizers:
+            raise forms.ValidationError(f"This event already has the maximum number of organizers ({max_organizers}).")
+            
+        return cleaned_data
 

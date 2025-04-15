@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    AddEventOrganizerView,
     EventCategoryCreateView,
     EventCategoryUpdateView,
     EventCategoryListView,
@@ -10,9 +11,9 @@ from .views import (
     EventDetailView,
     EventUpdateView,
     EventDeleteView,
-    ApplicationCreateView,
-    ApplicationListView,
-    ApplicationUpdateView,
+    ParticipateEventView,
+    ParticipatingEventsListView,
+    UnparticipateEventView,
 
 )
 
@@ -31,8 +32,12 @@ urlpatterns = [
     path('update/<int:pk>/', EventUpdateView.as_view(), name='event_update'),
     path('delete/<int:pk>/', EventDeleteView.as_view(), name='event_delete'),
 
-    # Application URLs
-    path('applications/create/', ApplicationCreateView.as_view(), name='organizer_application_create'),
-    path('applications/', ApplicationListView.as_view(), name='organizer_application_list'),
-    path('applications/update/<int:pk>/', ApplicationUpdateView.as_view(), name='organizer_application_update'),
+    # Event Organizer URLs
+    path('<int:pk>/add-organizer/', AddEventOrganizerView.as_view(), name='event_add_organizer'),
+
+    # Event Participation URLs
+    path('participate/<int:pk>/', ParticipateEventView.as_view(), name='event_participate'),
+    path('unparticipate/<int:pk>/', UnparticipateEventView.as_view(), name='event_unparticipate'),
+    path('participating/', ParticipatingEventsListView.as_view(), name='participating_events'),
+
 ]
