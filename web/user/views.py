@@ -1,12 +1,15 @@
 from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
+
+from django.db.models import F, Window, Count
+from django.db.models.functions import Rank
 #from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 
 from .mixins import ManagerRequiredMixin
-from .models import CustomUser, Profile
+from .models import CustomUser, Profile, PointHistory
 from .forms import CustomUserCreationForm, ProfileForm
 
 # Create your views here.
@@ -158,3 +161,153 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Your profile has been updated successfully.")
         return super().form_valid(form)
+
+
+# In user/views.py
+class UserLevelDashboardView(LoginRequiredMixin, DetailView):
+    model = CustomUser
+    template_name = 'user/level_dashboard.html'
+    context_object_name = 'profile_user'
+    
+    def get_object(self, queryset=None):
+        return self.request.user
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.get_object()
+        profile = user.profile
+        
+        # Calculate progress to next level
+        level_thresholds = profile.get_level_thresholds()
+        current_level = profile.current_level
+        
+        if current_level < len(level_thresholds) + 1:
+            if current_level == 1:
+                min_points = 0
+            else:
+                min_points = level_thresholds[current_level - 2]
+                
+            max_points = level_thresholds[current_level - 1]
+            points_needed = max_points - profile.total_points
+            progress_percentage = ((profile.total_points - min_points) / 
+                                   (max_points - min_points)) * 100
+        else:
+            # Max level reached
+            points_needed = 0
+            progress_percentage = 100
+            
+        context.update({
+            'total_points': profile.total_points,
+            'current_level': profile.current_level,
+            'points_needed': points_needed,
+            'progress_percentage': progress_percentage,
+            'recent_points': user.point_history.all()[:10],
+            'participating_events_count': user.participating_events.count(),
+            'organizing_events_count': user.organizing_events.count(),
+            'ratings_given_count': user.given_ratings.count(),
+        })
+        
+        return context
+    
+
+# In user/views.py
+
+
+class UserLevelHistoryView(LoginRequiredMixin, ListView):
+    """View to display the user's point history"""
+    model = PointHistory
+    template_name = 'user/level_history.html'
+    context_object_name = 'point_history'
+    paginate_by = 10
+    
+    def test_func(self):
+        # Only students can view the leaderboard
+        return self.request.user.user_type == 'student'
+    def get_queryset(self):
+    # Get the current user's point history ordered by most recent first
+    # Only works for student users
+        if self.request.user.user_type == 'student':
+            return PointHistory.objects.filter(
+                user=self.request.user
+            ).order_by('-timestamp')
+        else:
+            # Return empty queryset for non-students
+            return PointHistory.objects.none()
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        profile = user.profile
+        
+        # Add level and points information to context
+        context.update({
+            'total_points': profile.total_points,
+            'current_level': profile.current_level,
+            'username': user.username,
+        })
+        
+        return context
+
+
+class LevelLeaderboardView(LoginRequiredMixin, ListView):
+    """View to display all users ranked by level and points"""
+    model = Profile
+    template_name = 'user/level_leaderboard.html'
+    context_object_name = 'leaderboard'
+    paginate_by = 20
+    
+    def test_func(self):
+        # Only students can view the leaderboard
+        return self.request.user.user_type == 'student'
+    
+    def get_queryset(self):
+    # Get all student users with their profiles, ordered by level and points
+        profiles = Profile.objects.select_related('user').filter(
+            user__is_account_confirmed=True,
+            user__user_type='student'  # Add this filter for students only
+        ).order_by('-current_level', '-total_points')
+
+        
+        # Add rank to each profile
+        rank = 1
+        user_id = self.request.user.id
+        leaderboard_with_rank = []
+        current_user_rank = None
+        
+        for profile in profiles:
+            entry = {
+                'rank': rank,
+                'username': profile.user.username,
+                'user_type': profile.user.get_user_type_display(),
+                'level': profile.current_level,
+                'points': profile.total_points,
+                'is_current_user': profile.user.id == user_id
+            }
+            
+            if profile.user.id == user_id:
+                current_user_rank = rank
+                
+            leaderboard_with_rank.append(entry)
+            rank += 1
+            
+        return leaderboard_with_rank
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        profile = user.profile
+        
+        # Find the current user's rank
+        for entry in context['leaderboard']:
+            if entry['is_current_user']:
+                context['user_rank'] = entry['rank']
+                break
+                
+        # Add user's level information
+        context.update({
+            'total_points': profile.total_points,
+            'current_level': profile.current_level,
+        })
+        
+        return context

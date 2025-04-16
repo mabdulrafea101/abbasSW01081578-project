@@ -251,7 +251,7 @@
             </li>
 
 
-            {% if request.user.user_type == 'student' or request.user.user_type == 'teacher' %}
+            {% if request.user.user_type == 'student' %}
             <!-- Review Events -->
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Events As Participant</span>
@@ -307,7 +307,7 @@
 
             <!-- Leveling and Badge System -->
             <li class="menu-header small text-uppercase">
-              <span class="menu-header-text">Levels &amp; Badges</span>
+              <span class="menu-header-text">Badges System</span>
             </li>
             <!-- Badge Section -->
             <li class="menu-item">
@@ -329,52 +329,33 @@
                 </li>
               </ul>
             </li>
+            
+            <!-- Leveling System -->
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">Leveling System</span>
+            </li>
 
-            <li class="menu-item">
-              <a
-                href="#"
-                target="_blank"
-                class="menu-link"
-              >
-                <i class="menu-icon tf-icons bx bxs-badge-check"></i>
-                <div class="text-truncate" data-i18n="Email">My Badges</div>
-                <div
-                  class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
-                >
-                  5
-                </div>
+            <li class="menu-item {% if '/level/' == request.path %}active{% endif %}">
+              <a href="{% url 'user_level' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-line-chart"></i>
+                <div class="text-truncate">My Level</div>
               </a>
             </li>
-            <li class="menu-item">
-              <a
-                href="#"
-                target="_blank"
-                class="menu-link"
-              >
-                <i class="menu-icon tf-icons bx bx-bar-chart-alt"></i>
-                <div class="text-truncate" data-i18n="Chat">My Level</div>
-                <div
-                  class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto"
-                >
-                  Pro
-                </div>
+
+            <li class="menu-item {% if '/level/history/' in request.path %}active{% endif %}">
+              <a href="{% url 'level_history' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-history"></i>
+                <div class="text-truncate">Points History</div>
               </a>
             </li>
-            <li class="menu-item">
-              <a
-                href=""
-                target="_blank"
-                class="menu-link"
-              >
-                <i class="menu-icon tf-icons bx bxs-crown"></i>
-                <div class="text-truncate" data-i18n="Leadboard">Leadboard</div>
-                <div
-                  class="badge rounded-pill bg-label-success text-uppercase fs-tiny ms-auto"
-                >
-                  new
-                </div>
+
+            <li class="menu-item {% if '/level/leaderboard/' in request.path %}active{% endif %}">
+              <a href="{% url 'level_leaderboard' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-trophy"></i>
+                <div class="text-truncate">Level Leaderboard</div>
               </a>
             </li>
+
             {% else %}
            <!-- Leveling and Badge System -->
             <li class="menu-header small text-uppercase">

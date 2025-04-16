@@ -2,6 +2,44 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import CustomUser, Profile
 
+from event.models import EventParticipant, EventOrganizer, Event
+from review.models import OrganizerRating
+
+
+@receiver(post_save, sender=EventParticipant)
+def award_participation_points(sender, instance, created, **kwargs):
+    """Award points when a user participates in an event"""
+    if created:
+        user = instance.user
+        event = instance.event
+        user.profile.add_points(2, f"Participated in event: {event.title}")
+
+
+@receiver(post_save, sender=Event)
+def award_organizer_points_on_completion(sender, instance, **kwargs):
+    """Award points to organizers when an event is completed"""
+    if instance.status == 'completed' and instance.tracker.has_changed('status'):
+        for organizer in instance.organizers.all():
+            organizer.user.profile.add_points(3, f"Organized completed event: {instance.title}")
+
+
+@receiver(post_save, sender=OrganizerRating)
+def award_rating_points(sender, instance, created, **kwargs):
+    """Award points for submitting and receiving ratings"""
+    if created:
+        # Award points to the participant for submitting a rating
+        participant = instance.participant
+        participant.profile.add_points(1, f"Rated organizer in event: {instance.event.title}")
+        
+        # Award points to the organizer based on rating value
+        organizer = instance.organizer.user
+        rating_value = instance.rating
+        organizer.profile.add_points(
+            rating_value, 
+            f"Received {rating_value}-star rating in event: {instance.event.title}"
+        )
+
+
 
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -12,9 +50,28 @@ def create_user_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 
+
 @receiver(post_save, sender=CustomUser)
 def save_user_profile(sender, instance, **kwargs):
     """
     Signal to save the Profile instance when the CustomUser is saved.
     """
     instance.profile.save()
+
+
+# In user/signals.py
+# @receiver(post_save, sender=Profile)
+# def notify_level_up(sender, instance, **kwargs):
+#     """Send notification when a user levels up"""
+#     if instance.tracker.has_changed('current_level') and instance.tracker.previous('current_level'):
+#         old_level = instance.tracker.previous('current_level')
+#         new_level = instance.current_level
+        
+#         if new_level > old_level:
+#             # Create a notification
+#             Notification.objects.create(
+#                 user=instance.user,
+#                 title="Level Up!",
+#                 message=f"Congratulations! You've advanced to level {new_level}.",
+#                 notification_type="achievement"
+#             )

@@ -18,4 +18,8 @@ urlpatterns = [
     path('student/dashboard/', views.StudentDashboardView.as_view(), name='student_dashboard'),
     path('teacher/dashboard/', views.TeacherDashboardView.as_view(), name='teacher_dashboard'),
     path('manager/dashboard/', views.ManagerDashboardView.as_view(), name='manager_dashboard'),
+    path('level/', views.UserLevelDashboardView.as_view(), name='user_level'),
+    path('level/history/', views.UserLevelHistoryView.as_view(), name='level_history'),
+    path('level/leaderboard/', views.LevelLeaderboardView.as_view(), name='level_leaderboard'),
+
 ]

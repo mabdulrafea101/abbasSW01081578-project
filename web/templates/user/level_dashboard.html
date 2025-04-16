@@ -1,0 +1,83 @@
+<!-- templates/user/dashboard.html -->
+{% extends 'base.html' %}
+
+{% block main_content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body text-center">
+          <h2>My Level</h2>
+          <div class="level-indicator">
+            <h1 class="display-1">{{ current_level }}</h1>
+          </div>
+          <p class="lead">{{ total_points }} total points</p>
+          
+          {% if points_needed > 0 %}
+          <p>{{ points_needed }} points needed for next level</p>
+          <div class="progress mb-3">
+            <div class="progress-bar" role="progressbar" style="width: {{ progress_percentage }}%" 
+                 aria-valuenow="{{ progress_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          {% else %}
+          <p>You've reached the maximum level!</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h3>Points Summary</h3>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-4">
+              <div class="p-3 border rounded">
+                <h4>{{ participating_events_count }}</h4>
+                <p>Events Participated</p>
+                <small class="text-muted">2 points each</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border rounded">
+                <h4>{{ organizing_events_count }}</h4>
+                <p>Events Organized</p>
+                <small class="text-muted">3 points each when completed</small>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border rounded">
+                <h4>{{ ratings_given_count }}</h4>
+                <p>Ratings Given</p>
+                <small class="text-muted">1 point each</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card mt-4">
+        <div class="card-header">
+          <h3>Recent Point Activity</h3>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            {% for point in recent_points %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              {{ point.reason }}
+              <span class="badge {% if point.points > 0 %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
+                {{ point.points }} pts
+              </span>
+            </li>
+            {% empty %}
+            <li class="list-group-item">No recent point activity</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}

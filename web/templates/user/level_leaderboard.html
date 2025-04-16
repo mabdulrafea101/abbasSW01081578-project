@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block main_content %}
+<div class="container">
+  <div class="row mb-4">
+    <div class="col">
+      <div class="card">
+        <div class="card-body text-center">
+          <h2 class="card-title">Level Leaderboard</h2>
+          <p class="card-text">
+            Your current level: <strong>{{ current_level }}</strong> with <strong>{{ total_points }}</strong> points
+            <br>
+            Your rank: <strong>#{{ user_rank }}</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>User</th>
+                  <th>User Type</th>
+                  <th>Level</th>
+                  <th>Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for entry in leaderboard %}
+                <tr {% if entry.is_current_user %}class="table-primary"{% endif %}>
+                  <td>{{ entry.rank }}</td>
+                  <td>{{ entry.username }}</td>
+                  <td>{{ entry.user_type }}</td>
+                  <td>{{ entry.level }}</td>
+                  <td>{{ entry.points }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center">No users found</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          {% if is_paginated %}
+          <nav class="mt-4" aria-label="Leaderboard pagination">
+            <ul class="pagination justify-content-center">
+              {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; First</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+              </li>
+              {% endif %}
+              
+              {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                  <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+              
+              {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content %}
