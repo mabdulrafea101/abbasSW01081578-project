@@ -67,11 +67,16 @@
                   <i class="bx bx-upload d-block d-sm-none"></i>
                   <span class="d-none d-sm-block">Upload new photo</span>
                 </label>
+                <button type="button" class="btn btn-outline-secondary mb-2" onclick="resetProfilePicture()">
+                  <i class="bx bx-reset d-block d-sm-none"></i>
+                  <span class="d-none d-sm-block">Reset</span>
+                </button>
                 <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 2MB</p>
               </div>
             </div>
             
-            <div class="mb-3">
+            <!-- This is where the file input is actually placed -->
+            <div class="mb-3" style="display: none;">
               {{ form.profile_picture }}
               <div class="form-text">
                 {% if form.profile_picture.errors %}
@@ -132,6 +137,7 @@
               <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancel</a>
             </div>
           </form>
+        
         </div>
       </div>
     </div>
@@ -142,30 +148,36 @@
 
 {% block page_JS %}
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Update the file input field to show the file name when selected
-    const actualFileInput = document.getElementById('{{ form.profile_picture.id_for_label }}');
-    const uploadBtn = document.querySelector('.button-wrapper label');
+  // Add this JavaScript to the page for better file input handling
+  document.addEventListener('DOMContentLoaded', function() {
+    const profilePictureInput = document.getElementById('{{ form.profile_picture.id_for_label }}');
+    const avatarImage = document.getElementById('uploadedAvatar');
     
-    // Hide the actual file input
-    actualFileInput.style.display = 'none';
-    
-    // When the upload button is clicked, trigger the hidden file input
-    uploadBtn.addEventListener('click', function() {
-      actualFileInput.click();
-    });
-    
-    // When a file is selected, update the image preview
-    actualFileInput.addEventListener('change', function() {
-      const file = this.files[0];
-      if (file) {
+    profilePictureInput.addEventListener('change', function(e) {
+      if (e.target.files.length) {
+        const file = e.target.files[0];
         const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('uploadedAvatar').src = e.target.result;
-        };
+        
+        reader.onload = function() {
+          avatarImage.src = reader.result;
+        }
+        
         reader.readAsDataURL(file);
       }
     });
   });
-</script>
+  
+  function resetProfilePicture() {
+    const profilePictureInput = document.getElementById('{{ form.profile_picture.id_for_label }}');
+    profilePictureInput.value = '';
+    
+    // Set back to default or current profile picture
+    const avatarImage = document.getElementById('uploadedAvatar');
+    {% if profile.profile_picture %}
+      avatarImage.src = "{{ profile.profile_picture.url }}";
+    {% else %}
+      avatarImage.src = "{% static 'img/avatars/default.png' %}";
+    {% endif %}
+  }
+  </script>
 {% endblock page_JS %}

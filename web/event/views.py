@@ -328,3 +328,6 @@ class OrganizingEventsListView(LoginRequiredMixin, ListView):
         
         # Get events where the user is an organizer
         return Event.objects.filter(organizers__user=self.request.user)
+
+
+# re check the filter to change status of withdraw... student should not withdraw when event is ongoing.

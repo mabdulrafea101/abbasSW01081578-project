@@ -5,6 +5,44 @@ from .models import CustomUser, Profile
 from event.models import EventParticipant, EventOrganizer, Event
 from review.models import OrganizerRating
 
+from django.contrib.auth import get_user_model
+
+CustomUser = get_user_model()
+
+@receiver(post_save, sender=CustomUser)
+def set_superuser_fields(sender, instance, created, **kwargs):
+    """
+    Signal to automatically set user_type to 'manager' and is_account_confirmed to True 
+    for superusers upon creation or when superuser status is granted.
+    Also ensures the superuser has a profile.
+    """
+    if instance.is_superuser:
+        # Check if user_type or is_account_confirmed needs to be updated
+        update_fields = []
+        
+        if instance.user_type != 'manager':
+            instance.user_type = 'manager'
+            update_fields.append('user_type')
+            
+        if not instance.is_account_confirmed:
+            instance.is_account_confirmed = True
+            update_fields.append('is_account_confirmed')
+            
+        # Only save if there are fields to update, and use update_fields to avoid infinite signal loop
+        if update_fields:
+            # Disconnect the signal temporarily to avoid infinite recursion
+            post_save.disconnect(set_superuser_fields, sender=CustomUser)
+            instance.save(update_fields=update_fields)
+            # Reconnect the signal
+            post_save.connect(set_superuser_fields, sender=CustomUser)
+        
+        # Check if profile exists, create if it doesn't
+        try:
+            instance.profile
+        except Profile.RelatedObjectDoesNotExist:
+            # Create profile if it doesn't exist
+            Profile.objects.create(user=instance)
+
 
 @receiver(post_save, sender=EventParticipant)
 def award_participation_points(sender, instance, created, **kwargs):
@@ -18,7 +56,7 @@ def award_participation_points(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Event)
 def award_organizer_points_on_completion(sender, instance, **kwargs):
     """Award points to organizers when an event is completed"""
-    if instance.status == 'completed' and instance.tracker.has_changed('status'):
+    if instance.status == 'completed':
         for organizer in instance.organizers.all():
             organizer.user.profile.add_points(3, f"Organized completed event: {instance.title}")
 
@@ -56,7 +94,11 @@ def save_user_profile(sender, instance, **kwargs):
     """
     Signal to save the Profile instance when the CustomUser is saved.
     """
-    instance.profile.save()
+    try:
+        instance.profile.save()
+    except AttributeError:
+        # Create profile if it doesn't exist
+        Profile.objects.create(user=instance)
 
 
 # In user/signals.py

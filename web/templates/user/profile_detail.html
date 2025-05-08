@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load badge_tags %}
 
 {% block page_title %}
 My Profile
@@ -9,16 +10,7 @@ My Profile
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="row">
     <div class="col-md-12">
-      {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
+
       
       <div class="card mb-4">
         <h5 class="card-header">Profile Details</h5>
@@ -93,23 +85,97 @@ My Profile
         </div>
       </div>
       
-      <!-- Stats Card -->
-      <div class="card mb-4">
-        <h5 class="card-header">Statistics</h5>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-4 text-center">
-              <h2 class="text-primary">{{ profile.total_points }}</h2>
-              <p>Total Points</p>
+      {% if request.user.user_type == 'student' %}
+            <!-- Stats Card -->
+            <div class="card mb-4">
+              <h5 class="card-header">Statistics</h5>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4 text-center">
+                    <h2 class="text-primary">{{ profile.total_points }}</h2>
+                    <p>Total Points</p>
+                  </div>
+                  <div class="col-md-4 text-center">
+                    <h2 class="text-success">{{ profile.current_level }}</h2>
+                    <p>Current Level</p>
+                  </div>
+                  <!-- Add level progress bar -->
+                  <div class="col-md-4 text-center">
+                    <h2 class="text-info">{{ points_needed }}</h2>
+                    <p>Points Needed for Next Level</p>
+                  </div>
+                </div>
+                
+                <!-- Level Progress Bar -->
+                <div class="mt-4">
+                  <label class="form-label">Level Progress</label>
+                  <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" 
+                        style="width: {{ progress_percentage }}%;" 
+                        aria-valuenow="{{ progress_percentage }}" 
+                        aria-valuemin="0" 
+                        aria-valuemax="100">
+                      {{ progress_percentage }}%
+                    </div>
+                  </div>
+                  <small class="text-muted mt-1 d-block">{{ profile.total_points }} points earned toward level {{ profile.current_level|add:1 }}</small>
+                </div>
+              </div>
             </div>
-            <div class="col-md-4 text-center">
-              <h2 class="text-success">{{ profile.current_level }}</h2>
-              <p>Current Level</p>
+      
+      
+            <!-- Badges Section -->
+            <div class="card mb-4">
+              <h5 class="card-header">My Badges</h5>
+              <div class="card-body">
+                {% if user_badges %}
+                  {% for category, data in badges_by_category.items %}
+                    {% if data.badges %}
+                      <h6 class="mt-3 mb-2">{{ data.label }}</h6>
+                      <div class="row g-3 mb-4">
+                        {% for badge in data.badges %}
+                          <div class="col-md-3 col-sm-6">
+                            <div class="card h-100">
+                              <div class="card-body text-center">
+                                <div class="badge-icon mb-3">
+                                  <span style="font-size: 2.5rem;">{{ badge.badge_type.icon }}</span>
+                                </div>
+                                <h5 class="card-title">{{ badge.badge_type.name }}</h5>
+                                <div class="badge bg-label-{{badge.badge_level_color}}">Level {{ badge.badge_type.level }}</div>
+                                <p class="card-text small mt-2">{{ badge.badge_type.description }}</p>
+                                <div class="text-muted small">Earned on {{ badge.earned_at|date:"F d, Y" }}</div>
+                                
+                                <!-- Add 100% completion indicator -->
+                                <div class="progress mt-2">
+                                  <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" 
+                                      aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                    100%
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                  <div class="mt-3">
+                    <a href="{% url 'user_badges' %}" class="btn btn-primary btn-sm">View All My Badges</a>
+                  </div>
+                {% else %}
+                  <div class="alert alert-info">
+                    <p>You haven't earned any badges yet. Participate in events and rate organizers to earn badges!</p>
+                    <a href="{% url 'all_badges' %}" class="btn btn-info btn-sm mt-2">See Available Badges</a>
+                  </div>
+                {% endif %}
+               
+              </div>
             </div>
-            <!-- Add more stats as needed -->
-          </div>
-        </div>
-      </div>
+      {% else %}
+      {% endif %}
+
+
+
     </div>
   </div>
 </div>

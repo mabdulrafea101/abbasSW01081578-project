@@ -2,6 +2,22 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.auth.models import UserManager
+
+
+class CustomUserManager(UserManager):
+    def create_superuser(self, username, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('user_type', 'manager')  # Set user_type to manager
+        extra_fields.setdefault('is_account_confirmed', True)  # Set account as confirmed
+        
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+            
+        return self._create_user(username, email, password, **extra_fields)
 
 
 class CustomUser(AbstractUser):
@@ -42,6 +58,7 @@ class CustomUser(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
+    objects = UserManager()
 
     def save(self, *args, **kwargs):
         if not self.username:
@@ -52,37 +69,6 @@ class CustomUser(AbstractUser):
         return self.username
 
 
-# class Profile(models.Model):
-#     """
-#     Profile model linked to the CustomUser model.
-#     """
-#     user = models.OneToOneField(CustomUser,
-#                                 on_delete=models.CASCADE,
-#                                 related_name='profile')
-#     total_points = models.PositiveIntegerField(default=0)
-#     current_level = models.PositiveIntegerField(default=0)
-#     bio = models.TextField(blank=True, null=True)
-#     profile_picture = models.ImageField(upload_to='profile_pictures/',
-#                                         blank=True,
-#                                         null=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-
-#     def update_level(self):
-#         """
-#         Update the user's level based on their total points.
-#         """
-#         LEVELS = [10, 30, 50, 100, 200]
-#         for idx, threshold in enumerate(LEVELS):
-#             if self.total_points >= threshold:
-#                 self.current_level = idx + 1
-#         self.save()
-
-#     def __str__(self):
-#         return f"{self.user.username}'s Profile"
-
-
-# In user/models.py
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True, null=True)
@@ -128,6 +114,34 @@ class Profile(models.Model):
         )
         
         return level_change
+    
+    # Add the missing properties
+    @property
+    def points_needed_for_next_level(self):
+        """Calculate how many points are needed to reach the next level"""
+        thresholds = self.get_level_thresholds()
+        if self.current_level <= len(thresholds):
+            return thresholds[self.current_level - 1] - self.total_points
+        return 0  # Max level reached
+    
+    @property
+    def level_progress_percentage(self):
+        """Calculate the percentage progress towards the next level"""
+        if self.current_level > len(self.get_level_thresholds()):
+            return 100  # Max level reached
+            
+        # Get current level threshold (points needed to reach current level)
+        current_threshold = 0 if self.current_level == 1 else self.get_level_thresholds()[self.current_level - 2]
+        
+        # Get next level threshold
+        next_threshold = self.get_level_thresholds()[self.current_level - 1]
+        
+        # Calculate points earned in current level and total points needed for current level
+        points_in_level = self.total_points - current_threshold
+        points_needed_for_level = next_threshold - current_threshold
+        
+        # Calculate percentage
+        return min(100, int((points_in_level / points_needed_for_level) * 100))
 
 
 # In user/models.py

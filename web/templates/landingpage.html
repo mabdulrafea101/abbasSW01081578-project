@@ -4,17 +4,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Peer Rating System</title>
+    <title>UNI Peer Rating System</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     />
+    <style>
+      .hero-section {
+        background-color: #f8f9fa;
+        padding: 100px 0;
+        text-align: center;
+      }
+      .feature-card {
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        transition: transform 0.3s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+      .feature-card:hover {
+        transform: translateY(-10px);
+      }
+      .stat-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #0d6efd;
+      }
+    </style>
   </head>
   <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
       <div class="container">
-        <a class="navbar-brand" href="#">Peer Rating System</a>
+        <a class="navbar-brand" href="#">UNI Peer Rating System</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -29,15 +58,16 @@
               <a class="nav-link" href="#features">Features</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" href="#how-it-works">How It Works</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="#testimonials">Testimonials</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#contact">Contact</a>
             </li>
             <li class="nav-item">
-              <a class="btn btn-outline-primary me-2" href="{% url 'login' %}"
-                >Login</a
-              >
+              <a class="btn btn-outline-primary me-2" href="{% url 'login' %}">Login</a>
             </li>
             <li class="nav-item">
               <a class="btn btn-primary" href="{% url 'signup' %}">Sign Up</a>
@@ -47,117 +77,208 @@
       </div>
     </nav>
 
-    <!-- Hero Slider -->
-    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <img
-            src="{% static 'img/pms2.png' %}"
-            class="d-block w-100"
-            alt="Slide 1"
-            style="height: 700px"
-          />
-          <div class="carousel-caption d-none d-md-block">
-            <h2>Effortless Project Management</h2>
-            <p>Streamline your workflow and boost productivity.</p>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6 text-lg-start text-center">
+            <h1 class="display-4 fw-bold mb-4">Rate, Earn Points, Level Up!</h1>
+            <p class="lead mb-4">Join our community-driven platform where students participate in events, rate organizers, and earn points to level up and collect badges.</p>
+            <div class="d-flex justify-content-lg-start justify-content-center">
+              <a href="{% url 'signup' %}" class="btn btn-primary btn-lg me-3">Get Started</a>
+              <a href="#how-it-works" class="btn btn-outline-secondary btn-lg">Learn More</a>
+            </div>
           </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="{% static 'img/pms1.jpg' %}"
-            class="d-block w-100"
-            alt="Slide 2"
-            style="height: 700px"
-          />
-          <div class="carousel-caption d-none d-md-block">
-            <h2>Collaborate with Your Team</h2>
-            <p>Work together in real-time from anywhere.</p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img
-            src="{% static 'img/pms3.webp' %}"
-            class="d-block w-100"
-            alt="Slide 3"
-            style="height: 700px"
-          />
-          <div class="carousel-caption d-none d-md-block">
-            <h2>Collaborate with Your Team</h2>
-            <p>Work together in real-time from anywhere.</p>
+          <div class="col-lg-6 mt-5 mt-lg-0 text-center">
+            <img src="{% static 'assets/img/UniLogo.png' %}" alt="Rating System Illustration" class="img-fluid rounded shadow-lg" style="max-height: 400px;">
           </div>
         </div>
       </div>
-      <button
-        class="carousel-control-prev"
-        type="button"
-        data-bs-target="#heroCarousel"
-        data-bs-slide="prev"
-      >
-        <span class="carousel-control-prev-icon"></span>
-      </button>
-      <button
-        class="carousel-control-next"
-        type="button"
-        data-bs-target="#heroCarousel"
-        data-bs-slide="next"
-      >
-        <span class="carousel-control-next-icon"></span>
-      </button>
-    </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-5 bg-light">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-number">500+</div>
+              <p class="mb-0">Active Students</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-number">100+</div>
+              <p class="mb-0">Events Hosted</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-number">5,000+</div>
+              <p class="mb-0">Ratings Submitted</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Features Section -->
-    <section id="features" class="container text-center my-5">
-      <h2 class="mb-4">Key Features</h2>
+    <section id="features" class="container py-5">
+      <h2 class="text-center mb-5">Key Features</h2>
       <div class="row">
         <div class="col-md-4">
-          <h4>Task Management</h4>
-          <p>Organize tasks and track progress effortlessly.</p>
+          <div class="feature-card bg-primary bg-opacity-10">
+            <h4 class="text-primary">Event Participation</h4>
+            <p>Join university events organized by faculty and fellow students to broaden your knowledge and network.</p>
+          </div>
         </div>
         <div class="col-md-4">
-          <h4>Team Collaboration</h4>
-          <p>Share files and communicate with team members.</p>
+          <div class="feature-card bg-success bg-opacity-10">
+            <h4 class="text-success">Rating System</h4>
+            <p>Rate event organizers based on your experience, and provide valuable feedback through comments.</p>
+          </div>
         </div>
         <div class="col-md-4">
-          <h4>Real-Time Updates</h4>
-          <p>Stay informed with instant notifications.</p>
+          <div class="feature-card bg-info bg-opacity-10">
+            <h4 class="text-info">Points & Badges</h4>
+            <p>Earn points for participating in events and submitting ratings. Level up and collect achievement badges.</p>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-md-4">
+          <div class="feature-card bg-warning bg-opacity-10">
+            <h4 class="text-warning">Leaderboards</h4>
+            <p>Compete with fellow students on the leaderboards and see who has earned the most points.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card bg-danger bg-opacity-10">
+            <h4 class="text-danger">Organizer Dashboard</h4>
+            <p>Track your event's success and view feedback from participants to improve future events.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card bg-secondary bg-opacity-10">
+            <h4 class="text-secondary">Progress Tracking</h4>
+            <p>Monitor your participation history, ratings given, and progress towards the next level.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row">
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px;">
+                  <h2 class="mb-0">1</h2>
+                </div>
+                <h5>Create Account</h5>
+                <p>Sign up as a student, teacher, or event manager to access the platform.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px;">
+                  <h2 class="mb-0">2</h2>
+                </div>
+                <h5>Join Events</h5>
+                <p>Browse and participate in upcoming events organized by faculty and peers.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px;">
+                  <h2 class="mb-0">3</h2>
+                </div>
+                <h5>Rate Organizers</h5>
+                <p>After events, rate organizers and provide constructive feedback.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px;">
+                  <h2 class="mb-0">4</h2>
+                </div>
+                <h5>Level Up</h5>
+                <p>Earn points, level up, and collect badges for your active participation.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Testimonials Section -->
-    <section id="testimonials" class="bg-light py-5">
+    <section id="testimonials" class="py-5">
       <div class="container text-center">
-        <h2 class="mb-4">What Our Users Say</h2>
-        <blockquote class="blockquote">
-          <p>
-            "This system has completely changed the way we manage projects!"
-          </p>
-          <footer class="blockquote-footer">Jane Doe, Project Manager</footer>
-        </blockquote>
+        <h2 class="mb-5">What Our Users Say</h2>
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <div class="p-4 bg-light rounded shadow-sm">
+                    <p class="lead">"This system has completely transformed how we run student events! The rating feedback helps organizers improve continuously."</p>
+                    <footer class="blockquote-footer mt-3">Dr. Sarah Johnson, Faculty Advisor</footer>
+                  </div>
+                </div>
+                <div class="carousel-item">
+                  <div class="p-4 bg-light rounded shadow-sm">
+                    <p class="lead">"I love collecting badges and seeing my level progress. It makes participating in university events much more engaging!"</p>
+                    <footer class="blockquote-footer mt-3">Ahmed Hassan, Computer Science Student</footer>
+                  </div>
+                </div>
+                <div class="carousel-item">
+                  <div class="p-4 bg-light rounded shadow-sm">
+                    <p class="lead">"The feedback I received as an event organizer was invaluable. I was able to improve my next event significantly."</p>
+                    <footer class="blockquote-footer mt-3">Layla Ibrahim, Engineering Student</footer>
+                  </div>
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="container text-center my-5">
-      <h2>Contact Us</h2>
-      <p>Email: support@loopandecho.com | Phone: (123) 456-7890</p>
+    <section id="contact" class="container text-center py-5">
+      <h2 class="mb-4">Contact Us</h2>
+      <p class="mb-5">Have questions about the UNI Peer Rating System? Send us a message!</p>
       <div class="row justify-content-center">
         <div class="col-md-6">
           <form>
             <div class="mb-3">
-              <label for="name" class="form-label">Name</label>
-              <input type="text" class="form-control" id="name" required />
+              <input type="text" class="form-control" placeholder="Your Name" required />
             </div>
             <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" required />
+              <input type="email" class="form-control" placeholder="Your Email" required />
             </div>
             <div class="mb-3">
-              <label for="message" class="form-label">Message</label>
               <textarea
                 class="form-control"
-                id="message"
                 rows="4"
+                placeholder="Your Message"
                 required
               ></textarea>
             </div>
@@ -168,8 +289,35 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light text-center py-3">
-      <p>&copy; 2025 Loop and Echo. All rights reserved.</p>
+    <footer class="bg-dark text-light text-center py-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 mb-3 mb-md-0">
+            <h5>UNI Peer Rating System</h5>
+            <p class="small">Empowering students through participation and feedback.</p>
+          </div>
+          <div class="col-md-4 mb-3 mb-md-0">
+            <h5>Quick Links</h5>
+            <ul class="list-unstyled">
+              <li><a href="#" class="text-decoration-none text-light">Home</a></li>
+              <li><a href="#features" class="text-decoration-none text-light">Features</a></li>
+              <li><a href="#how-it-works" class="text-decoration-none text-light">How It Works</a></li>
+              <li><a href="#contact" class="text-decoration-none text-light">Contact</a></li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h5>Connect With Us</h5>
+            <div class="d-flex justify-content-center gap-3">
+              <a href="#" class="text-light"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="text-light"><i class="bi bi-twitter"></i></a>
+              <a href="#" class="text-light"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="text-light"><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+        <hr class="mt-4 bg-secondary">
+        <p class="mb-0">&copy; 2025 UNI Peer Rating System. All rights reserved.</p>
+      </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

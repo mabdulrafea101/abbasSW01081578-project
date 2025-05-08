@@ -21,10 +21,12 @@ class EventRatingView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     context_object_name = 'event'
     
     def test_func(self):
-        # Only participants can see the rating page
         event = self.get_object()
-        return EventParticipant.objects.filter(event=event, user=self.request.user).exists()
-    
+        # Allow both participants and organizers to see the rating page
+        is_participant = EventParticipant.objects.filter(event=event, user=self.request.user).exists()
+        is_organizer = EventOrganizer.objects.filter(event=event, user=self.request.user).exists()
+        return is_participant or is_organizer
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         event = self.get_object()
@@ -68,6 +70,13 @@ class EventRatingView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
                 'comments': comments,
                 'comment_form': CommentForm(),
             })
+        # Check if the current user is an organizer of this event
+        is_organizer = EventOrganizer.objects.filter(
+            event=event, 
+            user=self.request.user
+        ).exists()
+        
+        context['is_organizer'] = is_organizer
             
         context['organizer_data'] = organizer_data
         context['reply_form'] = ReplyForm()

@@ -1,9 +1,263 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manager Dashboard{% endblock %}
+
 {% block main_content %}
-<h1>Dashboard {{ request.user.user_type }}</h1>
-<ul>
-  {% for user in dashboard_data %}
-  <li>{{ user.username }} - {{ user.email }}</li>
-  {% endfor %}
-</ul>
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="row">
+    <!-- User Statistics -->
+    <div class="col-xl-4 col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between">
+          <h5 class="card-title mb-0">User Statistics</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="badge bg-label-primary rounded p-2">
+                <i class="bx bx-user"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Students</h6>
+              </div>
+            </div>
+            <div>
+              <h6 class="mb-0">{{ student_count }}</h6>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="badge bg-label-info rounded p-2">
+                <i class="bx bx-user-voice"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Teachers</h6>
+              </div>
+            </div>
+            <div>
+              <h6 class="mb-0">{{ teacher_count }}</h6>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <div class="badge bg-label-warning rounded p-2">
+                <i class="bx bx-user-check"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Pending Users</h6>
+              </div>
+            </div>
+            <div>
+              <h6 class="mb-0">{{ pending_users_count }}</h6>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer border-top pt-0">
+          <a href="{% url 'pending_users' %}" class="btn btn-primary w-100">Manage Users</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Statistics -->
+    <div class="col-xl-4 col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between">
+          <h5 class="card-title mb-0">Event Statistics</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="badge bg-label-primary rounded p-2">
+                <i class="bx bx-calendar-event"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Total Events</h6>
+              </div>
+            </div>
+            <div>
+              <h6 class="mb-0">{{ total_events }}</h6>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="badge bg-label-success rounded p-2">
+                <i class="bx bx-calendar-check"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Upcoming Events</h6>
+              </div>
+            </div>
+            <div>
+              <h6 class="mb-0">{{ upcoming_events }}</h6>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="badge bg-label-warning rounded p-2">
+                <i class="bx bx-calendar-star"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Ongoing Events</h6>
+              </div>
+            </div>
+            <div>
+              <h6 class="mb-0">{{ ongoing_events }}</h6>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <div class="badge bg-label-info rounded p-2">
+                <i class="bx bx-calendar-x"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Completed Events</h6>
+              </div>
+            </div>
+            <div>
+              <h6 class="mb-0">{{ completed_events }}</h6>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer border-top pt-0">
+          <a href="{% url 'event_list' %}" class="btn btn-primary w-100">All Events</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-xl-4 col-md-12 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-6">
+              <a href="{% url 'event_create' %}" class="btn btn-outline-primary d-flex flex-column align-items-center p-3 w-100">
+                <i class="bx bx-calendar-plus mb-2 fs-3"></i>
+                <span>Create Event</span>
+              </a>
+            </div>
+            <div class="col-6">
+              <a href="{% url 'pending_users' %}" class="btn btn-outline-warning d-flex flex-column align-items-center p-3 w-100">
+                <i class="bx bx-user-check mb-2 fs-3"></i>
+                <span>Approve Users</span>
+              </a>
+            </div>
+            <div class="col-6">
+              <a href="{% url 'admin:index' %}" class="btn btn-outline-danger d-flex flex-column align-items-center p-3 w-100">
+                <i class="bx bx-cog mb-2 fs-3"></i>
+                <span>Admin Panel</span>
+              </a>
+            </div>
+            <div class="col-6">
+              <a href="{% url 'level_leaderboard' %}" class="btn btn-outline-success d-flex flex-column align-items-center p-3 w-100">
+                <i class="bx bx-trophy mb-2 fs-3"></i>
+                <span>Leaderboard</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Recent Events -->
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between">
+          <h5 class="card-title mb-0">Recent Events</h5>
+          <a href="{% url 'event_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body">
+          {% if recent_events %}
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Participants</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for event in recent_events %}
+                <tr>
+                  <td>{{ event.title }}</td>
+                  <td><span class="badge bg-label-{{ event.status|yesno:'success,warning,info' }}">{{ event.get_status_display }}</span></td>
+                  <td>{{ event.participants.count }}</td>
+                  <td>
+                    <a href="{% url 'event_detail' event.pk %}" class="btn btn-sm btn-icon btn-primary">
+                      <i class="text-success bx bx-show"></i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center p-4">
+            <i class="bx bx-calendar-x fs-1 text-muted mb-2"></i>
+            <p class="mb-0">No recent events available.</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Ratings -->
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between">
+          <h5 class="card-title mb-0">Recent Ratings</h5>
+        </div>
+        <div class="card-body">
+          {% if recent_ratings %}
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Organizer</th>
+                  <th>Rating</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for rating in recent_ratings %}
+                <tr>
+                  <td>{{ rating.event.title }}</td>
+                  <td>{{ rating.organizer.user.username }}</td>
+                  <td>
+                    <div class="text-warning">
+                      {% for i in '12345'|make_list %}
+                        {% if forloop.counter <= rating.rating %}
+                          <i class="bx bxs-star"></i>
+                        {% else %}
+                          <i class="bx bx-star"></i>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  </td>
+                  <td>{{ rating.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center p-4">
+            <i class="bx bx-star fs-1 text-muted mb-2"></i>
+            <p class="mb-0">No ratings have been submitted yet.</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock main_content %}

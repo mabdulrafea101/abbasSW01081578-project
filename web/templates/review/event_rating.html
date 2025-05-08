@@ -24,25 +24,32 @@
             </div>
             
             <!-- Rating Form -->
-            <form method="post" action="{% url 'rate_organizer' event.pk data.organizer.pk %}" class="mb-3">
-              {% csrf_token %}
-              <div class="row g-3 align-items-center">
-                <div class="col-auto">
-                  <label for="id_rating_{{ data.organizer.pk }}" class="col-form-label">Your Rating:</label>
-                </div>
-                <div class="col-auto">
-                  {{ data.rating_form.rating }}
-                </div>
-                <div class="col-auto">
+          <form method="post" action="{% url 'rate_organizer' event.pk data.organizer.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="row g-3 align-items-center">
+              <div class="col-auto">
+                <label for="id_rating_{{ data.organizer.pk }}" class="col-form-label">Your Rating:</label>
+              </div>
+              <div class="col-auto">
+                {{ data.rating_form.rating }}
+              </div>
+              <div class="col-auto">
+                {% if is_organizer or data.organizer.user == request.user %}
+                  <button type="submit" class="btn btn-primary btn-sm" disabled>Rate</button>
+                  <small class="text-muted">You cannot rate yourself or other organizers</small>
+                {% else %}
                   <button type="submit" class="btn btn-primary btn-sm">Rate</button>
-                </div>
+                {% endif %}
               </div>
-              
-              <div class="mt-2">
-                <label for="id_comment_{{ data.organizer.pk }}" class="form-label">Comment (Optional):</label>
-                {{ data.rating_form.comment }}
-              </div>
-            </form>
+            </div>
+
+            <!-- Comment Field -->
+            <div class="form-group mt-3">
+              <label for="id_comment">Your Comment (Optional):</label>
+              {{ data.rating_form.comment }}
+            </div>
+          </form>
+
             
             <!-- Comments Section -->
             <div class="comments-section mt-4">

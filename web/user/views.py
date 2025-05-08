@@ -4,13 +4,19 @@ from django.urls import reverse, reverse_lazy
 
 from django.db.models import F, Window, Count
 from django.db.models.functions import Rank
+from django.utils import timezone
+from django.db.models import Q
 #from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 
+from badge.models import BadgeProgress, BadgeType
+from review.models import OrganizerRating
+
 from .mixins import ManagerRequiredMixin
 from .models import CustomUser, Profile, PointHistory
 from .forms import CustomUserCreationForm, ProfileForm
+from event.models import Event
 
 # Create your views here.
 
@@ -103,7 +109,6 @@ class ConfirmUserView(ManagerRequiredMixin, UserPassesTestMixin, UpdateView):
         return CustomUser.objects.filter(is_account_confirmed=False)
 
 
-
 class BaseDashboardView(LoginRequiredMixin, ListView):
     # Common dashboard logic here (e.g., template_name)
     context_object_name = 'dashboard_data'
@@ -115,6 +120,29 @@ class ManagerDashboardView(BaseDashboardView):
 
     def get_queryset(self):
         return CustomUser.objects.all()  # All users for manager
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get counts for different user types
+        context['student_count'] = CustomUser.objects.filter(user_type='student').count()
+        context['teacher_count'] = CustomUser.objects.filter(user_type='teacher').count()
+        context['pending_users_count'] = CustomUser.objects.filter(is_account_confirmed=False).count()
+        
+        # Get event statistics
+        context['total_events'] = Event.objects.count()
+        context['upcoming_events'] = Event.objects.filter(status='upcoming').count()
+        context['ongoing_events'] = Event.objects.filter(status='ongoing').count()
+        context['completed_events'] = Event.objects.filter(status='completed').count()
+        
+        # Get recent events (limit to 5)
+        context['recent_events'] = Event.objects.all().order_by('-created_at')[:5]
+        
+        # Get recent ratings (limit to 5)
+        context['recent_ratings'] = OrganizerRating.objects.all().order_by('-created_at')[:5]
+        
+        return context
+
 
 
 class TeacherDashboardView(BaseDashboardView):
@@ -128,7 +156,43 @@ class StudentDashboardView(BaseDashboardView):
     template_name = 'user/student_dashboard.html'
 
     def get_queryset(self):
-        return CustomUser.objects.filter(user_type='teacher')  # Students see teachers
+        # Students see teachers (this is likely not relevant to the dashboard)
+        return CustomUser.objects.filter(user_type='teacher')  # Or remove this line
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        profile = user.profile
+        
+        # Get user badges grouped by category
+        user_badges = user.badges.select_related('badge_type').order_by(
+            'badge_type__category', 'badge_type__level'
+        )
+        
+        # Group badges by category for easy display
+        badges_by_category = {}
+        for category, label in BadgeType.CATEGORY_CHOICES:
+            category_badges = user_badges.filter(badge_type__category=category)
+            badges_by_category[category] = {
+                'label': label,
+                'badges': category_badges
+            }
+        
+        # Get upcoming events
+        now = timezone.now()
+        upcoming_events = Event.objects.filter(
+            start_date_time__gte=now
+        ).order_by('start_date_time')
+        
+        context.update({
+            'profile': profile,
+            'participating_events_count': user.participating_events.count(),
+            'organizing_events_count': user.organizing_events.count(),
+            'user_badges': user_badges,
+            'badges_by_category': badges_by_category,
+            'upcoming_events': upcoming_events,
+        })
+        return context
 
 
 class ProfileDetailView(LoginRequiredMixin, DetailView):
@@ -142,9 +206,49 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Add additional context data if needed
-        context['user'] = self.request.user
-        # You could add stats, badges, events, etc.
+        user = self.request.user
+        profile = self.get_object()
+        
+        # Calculate points needed and progress percentage
+        points_needed = profile.points_needed_for_next_level
+        progress_percentage = profile.level_progress_percentage
+        
+        # Get user badges grouped by category
+        user_badges = user.badges.select_related('badge_type').order_by(
+            'badge_type__category', 'badge_type__level'
+        )
+        
+        # Group badges by category for easy display
+        badges_by_category = {}
+        for category, label in BadgeType.CATEGORY_CHOICES:
+            category_badges = user_badges.filter(badge_type__category=category)
+            badges_by_category[category] = {
+                'label': label,
+                'badges': category_badges
+            }
+        
+        # Get badge progress for badges not yet earned
+        earned_badge_types = user_badges.values_list('badge_type_id', flat=True)
+        badge_progress = BadgeProgress.objects.filter(
+            user=user
+        ).exclude(
+            badge_type_id__in=earned_badge_types
+        ).select_related('badge_type')
+        
+        context.update({
+            'total_points': profile.total_points,
+            'current_level': profile.current_level,
+            'points_needed': points_needed,
+            'progress_percentage': progress_percentage,
+            'recent_points': user.point_history.all()[:10],
+            'participating_events_count': user.participating_events.count(),
+            'organizing_events_count': user.organizing_events.count(),
+            'ratings_given_count': user.given_ratings.count(),
+            'user_badges': user_badges,
+            'badges_by_category': badges_by_category,
+            'badge_progress': badge_progress,
+            'user': user,
+        })
         return context
 
 
@@ -153,14 +257,20 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ProfileForm
     template_name = 'user/profile_update.html'
     success_url = reverse_lazy('profile')
-
+    
     def get_object(self, queryset=None):
-        # Always update the logged-in user's profile
+        # Return the logged-in user's profile
         return self.request.user.profile
         
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = self.get_object()
+        return context
+        
     def form_valid(self, form):
-        messages.success(self.request, "Your profile has been updated successfully.")
+        messages.success(self.request, 'Profile updated successfully!')
         return super().form_valid(form)
+
 
 
 # In user/views.py
