@@ -21,5 +21,6 @@ urlpatterns = [
     path('level/', views.UserLevelDashboardView.as_view(), name='user_level'),
     path('level/history/', views.UserLevelHistoryView.as_view(), name='level_history'),
     path('level/leaderboard/', views.LevelLeaderboardView.as_view(), name='level_leaderboard'),
-
+    path('top-organizers/', views.TopOrganizersView.as_view(), name='top_organizers'),
+    path('top-participants/', views.TopParticipantsView.as_view(), name='top_participants'),
 ]

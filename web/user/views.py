@@ -2,7 +2,7 @@ from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
 
-from django.db.models import F, Window, Count
+from django.db.models import F, Window, Count, Avg
 from django.db.models.functions import Rank
 from django.utils import timezone
 from django.db.models import Q
@@ -17,6 +17,7 @@ from .mixins import ManagerRequiredMixin
 from .models import CustomUser, Profile, PointHistory
 from .forms import CustomUserCreationForm, ProfileForm
 from event.models import Event
+
 
 # Create your views here.
 
@@ -420,4 +421,56 @@ class LevelLeaderboardView(LoginRequiredMixin, ListView):
             'current_level': profile.current_level,
         })
         
+        return context
+
+
+class TopOrganizersView(LoginRequiredMixin, ListView):
+    """View to display top organizers based on ratings and points"""
+    model = CustomUser
+    template_name = 'user/top_organizers.html'
+    context_object_name = 'top_organizers'
+    paginate_by = 20
+    
+    def get_queryset(self):
+        # Get users who have organized at least one event
+        organizers = CustomUser.objects.filter(organizing_events__isnull=False).distinct()
+        
+        # Annotate with number of events hosted, average rating, and total points
+        organizers = organizers.annotate(
+            events_hosted=Count('organizing_events', distinct=True),
+            avg_stars=Avg('organizing_events__ratings__rating'),
+            total_points=F('profile__total_points')
+        ).order_by('-avg_stars', '-total_points', '-events_hosted')
+        
+        return organizers
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Additional context data if needed
+        return context
+
+
+class TopParticipantsView(LoginRequiredMixin, ListView):
+    """View to display top participants based on event attendance and activity"""
+    model = CustomUser
+    template_name = 'user/top_participants.html'
+    context_object_name = 'top_participants'
+    paginate_by = 20
+    
+    def get_queryset(self):
+        # Get users who have participated in at least one event
+        participants = CustomUser.objects.filter(participating_events__isnull=False).distinct()
+        
+        # Annotate with number of events attended, ratings given, and total points
+        participants = participants.annotate(
+            events_attended=Count('participating_events', distinct=True),
+            ratings_given=Count('given_ratings', distinct=True),
+            total_points=F('profile__total_points')
+        ).order_by('-total_points', '-events_attended', '-ratings_given')
+        
+        return participants
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Additional context data if needed
         return context

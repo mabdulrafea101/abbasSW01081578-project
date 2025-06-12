@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Top Organizers Report{% endblock %}
+
+{% block main_content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">Reports /</span> Top Organizers
+    </h4>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Top Organizers by Ratings and Points</h5>
+        </div>
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Events Hosted</th>
+                        <th>Avg. Stars</th>
+                        <th>Total Points</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    {% for organizer in top_organizers %}
+                    <tr class="{% if organizer == request.user %}table-primary{% endif %}">
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <strong>{{ organizer.first_name }} {{ organizer.last_name }}</strong>
+                            <small class="d-block text-muted">{{ organizer.email }}</small>
+                        </td>
+                        <td>{{ organizer.events_hosted }}</td>
+                        <td>
+                            {% if organizer.avg_stars %}
+                                {{ organizer.avg_stars|floatformat:1 }} ★
+                            {% else %}
+                                No ratings
+                            {% endif %}
+                        </td>
+                        <td>{{ organizer.total_points }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No organizers found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% include 'includes/pagination.html' with page_obj=page_obj %}
+</div>
+{% endblock main_content %}
