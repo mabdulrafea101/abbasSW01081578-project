@@ -1,75 +1,253 @@
-
-{% extends "base.html" %} 
+{% extends "base.html" %}
 {% load static %}
-
 
 {% block page_CSS %}
 <link rel="stylesheet" href="{% static 'assets/css/form-basic-inputs.css' %}">
+<style>
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+  }
+  .input-group-text {
+    background-color: #f5f5f9;
+  }
+  .event-form-header {
+    border-bottom: 2px solid #5a8dee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    color: #566a7f;
+  }
+  .image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 10px;
+    border-radius: 5px;
+    display: none;
+  }
+  .form-text {
+    font-size: 0.8125rem;
+    color: #a1acb8;
+  }
+  .required-field::after {
+    content: "*";
+    color: #ff3e1d;
+    margin-left: 3px;
+  }
+</style>
 {% endblock page_CSS %}
-{% block page_title %}Event Create{% endblock page_title %}
-{% block main_content %}
 
-<div class="col-xl-12">
-  <!-- HTML5 Inputs -->
-  <div class="card mb-6">
-    <h2 class="card-header">
-      {% if object %}Edit Event{% else %}Create Event{% endif %}
-    </h2>
-    <div class="card-body">
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %} 
-            <div class="mt-4 row">
+{% block page_title %}{% if object %}Edit Event{% else %}Create Event{% endif %}{% endblock page_title %}
+
+{% block main_content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">{% if object %}Edit Event{% else %}Create New Event{% endif %}</h4>
+          <small class="text-muted float-end">Fill all required fields</small>
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data" id="eventForm">
+            {% csrf_token %}
+            
+            <div class="row">
+              <!-- Left Column -->
+              <div class="col-md-6">
+                <h5 class="event-form-header">Basic Information</h5>
                 
-                <div class="col-md-6">
-                    {{ form.title.label_tag }} {{ form.title }}
-                    {{ form.organizers_type.label_tag }} {{ form.organizers_type }}
-                    
-                    {{ form.event_type.label_tag }} {{ form.event_type }}
-                    {{ form.start_date_time.label_tag }} {{ form.start_date_time }}
-                    {{ form.event_for.label_tag }} {{ form.event_for }}
-                    {{ form.description.label_tag }} {{ form.description }}
-                    {{ form.status.label_tag }} {{ form.status }}
-                </div>
-                <div class="col-md-6">
-                    {{ form.category.label_tag }} {{ form.category }}
-                    {{ form.max_organizers.label_tag }} {{ form.max_organizers }}
-                    {{ form.location.label_tag }} {{ form.location }}
-                    {{ form.end_date_time.label_tag }} {{ form.end_date_time }}
-                    {{ form.max_participants.label_tag }} {{ form.max_participants }}
-                    {{ form.images.label_tag }} {{ form.images }}
-                    <button type="submit" class="mt-2 btn btn-primary">Save</button>
-                    <a href="{% url 'event_list' %}" class="mt-2 btn btn-secondary">Cancel</a>
-                    
+                <div class="form-group">
+                  <label for="{{ form.title.id_for_label }}" class="form-label required-field">Event Title</label>
+                  {{ form.title }}
+                  {% if form.title.errors %}
+                  <div class="text-danger">{{ form.title.errors }}</div>
+                  {% endif %}
                 </div>
                 
+                <div class="form-group">
+                  <label for="{{ form.category.id_for_label }}" class="form-label required-field">Category</label>
+                  {{ form.category }}
+                  {% if form.category.errors %}
+                  <div class="text-danger">{{ form.category.errors }}</div>
+                  {% endif %}
+                </div>
+                
+                <div class="form-group">
+                  <label for="{{ form.description.id_for_label }}" class="form-label required-field">Description</label>
+                  {{ form.description }}
+                  {% if form.description.errors %}
+                  <div class="text-danger">{{ form.description.errors }}</div>
+                  {% endif %}
+                  <div class="form-text">Provide a detailed description of your event</div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="{{ form.images.id_for_label }}" class="form-label">Event Image</label>
+                  {{ form.images }}
+                  {% if form.images.errors %}
+                  <div class="text-danger">{{ form.images.errors }}</div>
+                  {% endif %}
+                  <div class="form-text">Upload an image to represent your event (JPG, PNG, max 5MB)</div>
+                  <img id="imagePreview" class="image-preview" src="#" alt="Image preview" />
+                </div>
+              </div>
+              
+              <!-- Right Column -->
+              <div class="col-md-6">
+                <h5 class="event-form-header">Event Details</h5>
+                
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label for="{{ form.event_type.id_for_label }}" class="form-label required-field">Event Type</label>
+                      {{ form.event_type }}
+                      {% if form.event_type.errors %}
+                      <div class="text-danger">{{ form.event_type.errors }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="{{ form.location.id_for_label }}" class="form-label location-label">Location</label>
+                  {{ form.location }}
+                  {% if form.location.errors %}
+                  <div class="text-danger">{{ form.location.errors }}</div>
+                  {% endif %}
+                  <div class="form-text location-help">Where will this event take place?</div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="{{ form.start_date_time.id_for_label }}" class="form-label required-field">Start Date & Time</label>
+                      {{ form.start_date_time }}
+                      {% if form.start_date_time.errors %}
+                      <div class="text-danger">{{ form.start_date_time.errors }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="{{ form.end_date_time.id_for_label }}" class="form-label required-field">End Date & Time</label>
+                      {{ form.end_date_time }}
+                      {% if form.end_date_time.errors %}
+                      <div class="text-danger">{{ form.end_date_time.errors }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="{{ form.max_organizers.id_for_label }}" class="form-label">Max Organizers</label>
+                      {{ form.max_organizers }}
+                      {% if form.max_organizers.errors %}
+                      <div class="text-danger">{{ form.max_organizers.errors }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="{{ form.max_participants.id_for_label }}" class="form-label">Max Participants</label>
+                      {{ form.max_participants }}
+                      {% if form.max_participants.errors %}
+                      <div class="text-danger">{{ form.max_participants.errors }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
-        </form>
+            
+            <div class="row mt-4">
+              <div class="col-12 d-flex justify-content-end gap-2">
+                <a href="{% url 'event_list' %}" class="btn btn-outline-secondary">
+                  <i class="bx bx-arrow-back me-1"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bx bx-save me-1"></i> {% if object %}Update Event{% else %}Create Event{% endif %}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+{% endblock main_content %}
 
-{% endblock main_content %} {% block page_JS %}
+{% block page_JS %}
 <script src="{% static 'assets/js/form-basic-inputs.js' %}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const eventTypeSelect = document.getElementById('id_event_type'); // Assuming 'id_event_type' is the ID of your event_type select element
-        const locationInput = document.getElementById('id_location'); // Assuming 'id_location' is the ID of your location input element
+  document.addEventListener('DOMContentLoaded', function() {
+    // Event type and location field handling
+    const eventTypeSelect = document.getElementById('id_event_type');
+    const locationInput = document.getElementById('id_location');
+    const locationLabel = document.querySelector('.location-label');
+    const locationHelp = document.querySelector('.location-help');
     
-        function updateLocationField() {
-            if (eventTypeSelect.value === 'online') {
-                locationInput.disabled = true;
-                locationInput.value = ''; // Clear the location field
-            } else {
-                locationInput.disabled = false;
-                locationInput.required = true; // Make it required again
-            }
-        }
+    function updateLocationField() {
+      if (eventTypeSelect.value === 'online') {
+        locationInput.disabled = true;
+        locationInput.value = '';
+        locationLabel.classList.remove('required-field');
+        locationHelp.textContent = 'Location not required for online events';
+      } else {
+        locationInput.disabled = false;
+        locationInput.required = true;
+        locationLabel.classList.add('required-field');
+        locationHelp.textContent = 'Where will this event take place?';
+      }
+    }
     
-        // Run on page load
-        updateLocationField();
+    // Run on page load
+    updateLocationField();
     
-        // Run when the event type changes
-        eventTypeSelect.addEventListener('change', updateLocationField);
+    // Run when the event type changes
+    eventTypeSelect.addEventListener('change', updateLocationField);
+    
+    // Image preview functionality
+    const imageInput = document.getElementById('id_images');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    imageInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = 'block';
+        };
+        
+        reader.readAsDataURL(this.files[0]);
+      } else {
+        imagePreview.style.display = 'none';
+      }
     });
-    </script>
+    
+    // Form validation
+    const form = document.getElementById('eventForm');
+    const startDate = document.getElementById('id_start_date_time');
+    const endDate = document.getElementById('id_end_date_time');
+    
+    form.addEventListener('submit', function(event) {
+      if (new Date(startDate.value) >= new Date(endDate.value)) {
+        alert('End date must be after start date');
+        event.preventDefault();
+      }
+    });
+  });
+</script>
 {% endblock page_JS %}
